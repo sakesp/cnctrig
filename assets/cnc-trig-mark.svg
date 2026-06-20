@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 330" role="img" aria-labelledby="title desc">
+  <title id="title">Right triangle layout diagram</title>
+  <desc id="desc">A right triangle on a grid with angle arcs, datum lines, and simple coordinate marks.</desc>
+  <defs>
+    <pattern id="grid" width="26" height="26" patternUnits="userSpaceOnUse">
+      <path d="M 26 0 L 0 0 0 26" fill="none" stroke="#d7ded8" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="520" height="330" rx="8" fill="#f9faf8"/>
+  <rect x="18" y="18" width="484" height="294" fill="url(#grid)" stroke="#cfd7d0" stroke-width="2"/>
+  <path d="M 96 244 L 403 244 L 403 72 Z" fill="#eaf4f4" stroke="#17211d" stroke-width="7" stroke-linejoin="round"/>
+  <path d="M 403 244 L 403 206 L 365 206" fill="none" stroke="#b46f2a" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M 136 244 A 40 40 0 0 1 163 207" fill="none" stroke="#1f6f78" stroke-width="6" stroke-linecap="round"/>
+  <path d="M 403 111 A 42 42 0 0 0 367 91" fill="none" stroke="#2f5f9e" stroke-width="6" stroke-linecap="round"/>
+  <path d="M 69 244 H 451" stroke="#66716a" stroke-width="3" stroke-dasharray="10 10"/>
+  <path d="M 403 43 V 280" stroke="#66716a" stroke-width="3" stroke-dasharray="10 10"/>
+  <circle cx="96" cy="244" r="7" fill="#17211d"/>
+  <circle cx="403" cy="244" r="7" fill="#17211d"/>
+  <circle cx="403" cy="72" r="7" fill="#17211d"/>
+  <text x="240" y="268" fill="#17211d" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700">run</text>
+  <text x="414" y="164" fill="#17211d" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700">rise</text>
+  <text x="238" y="139" fill="#17211d" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700">angle</text>
+</svg>

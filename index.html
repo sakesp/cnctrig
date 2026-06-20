@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Shop-friendly trig and geometry calculators for machinists.">
+    <title>CNC Trig | Machinist Calculators</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="index.html" aria-label="CNC Trig home">
+        <span class="brand-mark" aria-hidden="true">CT</span>
+        <span>CNC Trig</span>
+      </a>
+      <nav class="top-nav" aria-label="Primary navigation">
+        <a href="#calculators">Calculators</a>
+        <a href="#notes">Notes</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="intro-section" aria-labelledby="page-title">
+        <div class="intro-copy">
+          <p class="eyebrow">Machinist Trig Calculators</p>
+          <h1 id="page-title">CNC Trig</h1>
+          <p class="intro-text">
+            Fast geometry answers for workholding, setup, and layout. Built for the bench, the machine,
+            and the phone in your pocket.
+          </p>
+        </div>
+
+        <figure class="diagram-panel" aria-label="Machinist triangle diagram">
+          <img src="assets/cnc-trig-mark.svg" alt="Right triangle layout diagram with grid and angle marks">
+        </figure>
+      </section>
+
+      <section class="calculator-section" id="calculators" aria-labelledby="calculator-heading">
+        <div class="section-heading">
+          <p class="eyebrow">Choose A Tool</p>
+          <h2 id="calculator-heading">Calculators</h2>
+        </div>
+
+        <div class="calculator-grid">
+          <a class="calculator-card card-triangle" href="calculators/triangle.html">
+            <span class="card-kicker">General</span>
+            <span class="card-title">Triangle Solver</span>
+            <span class="card-copy">Solve sides and angles from the triangle values you already know.</span>
+            <span class="card-action">Open calculator</span>
+          </a>
+
+          <a class="calculator-card card-chamfer" href="calculators/lathe-chamfer.html">
+            <span class="card-kicker">Lathe</span>
+            <span class="card-title">Chamfer Solver</span>
+            <span class="card-copy">Work out chamfer geometry for common turning jobs.</span>
+            <span class="card-action">Open calculator</span>
+          </a>
+
+          <a class="calculator-card card-axis" href="calculators/b-axis-rotation.html">
+            <span class="card-kicker">Mill</span>
+            <span class="card-title">B-Axis Rotation Solver</span>
+            <span class="card-copy">Calculate horizontal mill coordinate changes after B-axis rotation.</span>
+            <span class="card-action">Open calculator</span>
+          </a>
+        </div>
+      </section>
+
+      <section class="notes-section" id="notes" aria-labelledby="notes-heading">
+        <h2 id="notes-heading">Shop Notes</h2>
+        <div class="note-list">
+          <p>Use any unit. Results stay in the same unit as the input values.</p>
+          <p>Each calculator will include decimal-place rounding control.</p>
+          <p>No login, no tracking, no backend.</p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <span>cnctrig.com</span>
+      <span>Static GitHub Pages site</span>
+    </footer>
+  </body>
+</html>
