@@ -75,14 +75,16 @@ a {
 
 .screen-shell,
 .site-header,
-.placeholder-main {
+.placeholder-main,
+.terms-main,
+.site-footer {
   width: min(1060px, calc(100% - 32px));
   margin-inline: auto;
 }
 
 .screen-shell {
   position: relative;
-  min-height: calc(100vh - 48px);
+  min-height: calc(100vh - 86px);
   margin-top: 24px;
   margin-bottom: 24px;
   padding: 18px;
@@ -280,12 +282,13 @@ h2 {
 
 .placeholder-main {
   display: grid;
-  min-height: calc(100vh - 108px);
+  min-height: calc(100vh - 144px);
   place-items: center;
   padding: 30px 0;
 }
 
-.placeholder-panel {
+.placeholder-panel,
+.terms-panel {
   width: min(720px, 100%);
   padding: 24px;
   background: rgba(19, 23, 17, 0.88);
@@ -304,6 +307,63 @@ h2 {
 
 .placeholder-panel p {
   color: #c5dd76;
+}
+
+.terms-main {
+  min-height: calc(100vh - 136px);
+  padding: 0 0 30px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.terms-panel {
+  margin-inline: auto;
+}
+
+.terms-panel h1 {
+  margin-bottom: 22px;
+  letter-spacing: 0;
+  text-align: left;
+  text-transform: none;
+}
+
+.terms-panel h2 {
+  margin-top: 24px;
+  margin-bottom: 8px;
+  color: var(--cyan);
+  font-size: 1.08rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.terms-panel p {
+  color: #c5dd76;
+  line-height: 1.55;
+}
+
+.terms-panel a:not(.back-link) {
+  color: var(--amber);
+}
+
+.site-footer {
+  position: relative;
+  z-index: 1;
+  padding: 0 0 20px;
+  color: #c5dd76;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-align: center;
+}
+
+.site-footer a {
+  text-decoration: none;
+}
+
+.site-footer a:hover,
+.site-footer a:focus-visible {
+  color: var(--amber);
+  outline: none;
 }
 
 .back-link {
@@ -329,7 +389,7 @@ h2 {
 
 .triangle-main {
   width: min(1160px, calc(100% - 32px));
-  min-height: calc(100vh - 108px);
+  min-height: calc(100vh - 144px);
   margin-inline: auto;
   padding: 0 0 30px;
   letter-spacing: 0;
@@ -959,7 +1019,9 @@ h2 {
   .screen-shell,
   .site-header,
   .placeholder-main,
-  .triangle-main {
+  .triangle-main,
+  .terms-main,
+  .site-footer {
     width: min(100% - 20px, 1060px);
   }
 
