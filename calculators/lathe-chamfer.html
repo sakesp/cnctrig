@@ -13,13 +13,158 @@
       </a>
     </header>
 
-    <main class="placeholder-main">
-      <section class="placeholder-panel" aria-labelledby="page-title">
-        <p class="eyebrow">LATHE</p>
-        <h1 id="page-title">CHAMFER SOLVER</h1>
-        <p>COMING SOON. THE LATHE CHAMFER SOLVER WILL BE ADDED AFTER THE TRIANGLE SOLVER LAUNCH.</p>
-        <a class="back-link" href="../index.html">BACK TO CALCULATORS</a>
+    <main class="triangle-main chamfer-main">
+      <section class="triangle-board chamfer-board" aria-labelledby="page-title">
+        <div class="triangle-topbar">
+          <div>
+            <p class="eyebrow">LATHE</p>
+            <h1 id="page-title">CHAMFER SOLVER</h1>
+          </div>
+
+          <a class="back-link compact-link" href="../index.html">BACK</a>
+        </div>
+
+        <p class="triangle-guidance">
+          ENTER &Oslash;D, DECIMAL DEGREE ANGLE, CHAMFER SIZE, AND START Z.
+          PRESS SOLVE TO GET BOTH ENDS OF THE CHAMFER IN X/Z COORDINATES.
+        </p>
+
+        <div class="triangle-workspace chamfer-workspace">
+          <div class="triangle-diagram-wrap chamfer-diagram-wrap" aria-label="LATHE CHAMFER DIAGRAM">
+            <svg class="triangle-svg chamfer-svg" viewBox="0 0 640 430" role="img" aria-labelledby="chamfer-svg-title">
+              <title id="chamfer-svg-title">Lathe chamfer profile with diameter, chamfer size, angle, Z, point 1, and point 2</title>
+              <defs>
+                <marker id="chamfer-arrow" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+                  <path d="M0,0 L6,3 L0,6 Z"></path>
+                </marker>
+                <marker id="chamfer-arrow-reverse" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+                  <path d="M6,0 L0,3 L6,6 Z"></path>
+                </marker>
+                <marker id="chamfer-leader-arrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                  <path d="M0,0 L6,3 L0,6 Z"></path>
+                </marker>
+                <pattern id="chamfer-hatch" width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+                  <line class="chamfer-hatch-line" x1="0" y1="0" x2="0" y2="12"></line>
+                </pattern>
+              </defs>
+              <path id="chamfer-solid" class="chamfer-solid"></path>
+              <line id="chamfer-centerline" class="chamfer-centerline"></line>
+              <line id="chamfer-c-extension-one" class="chamfer-extension-line"></line>
+              <line id="chamfer-c-extension-two" class="chamfer-extension-line"></line>
+              <path id="chamfer-profile" class="chamfer-profile"></path>
+              <path id="chamfer-cut" class="chamfer-cut"></path>
+              <line id="chamfer-diameter-dim" class="chamfer-leader-line"></line>
+              <line id="chamfer-size-dim" class="chamfer-dim-line"></line>
+              <line id="chamfer-point-one-leader" class="chamfer-leader-line"></line>
+              <line id="chamfer-point-two-leader" class="chamfer-leader-line"></line>
+              <path id="chamfer-angle-arc" class="chamfer-angle-arc"></path>
+              <circle id="chamfer-point-diameter" class="chamfer-point"></circle>
+              <circle id="chamfer-point-input" class="chamfer-point"></circle>
+              <text id="chamfer-mode-label" class="chamfer-label chamfer-label-cyan"></text>
+              <text id="chamfer-d-label" class="chamfer-label chamfer-label-cyan">&Oslash;D</text>
+              <text id="chamfer-c-label" class="chamfer-label chamfer-label-amber">C</text>
+              <text id="chamfer-a-label" class="chamfer-label chamfer-label-amber">A</text>
+              <text id="chamfer-z-label" class="chamfer-label chamfer-label-cyan">Z</text>
+              <text id="chamfer-diameter-label" class="chamfer-coordinate-label"></text>
+              <text id="chamfer-input-label" class="chamfer-coordinate-label"></text>
+            </svg>
+          </div>
+
+          <form class="triangle-controls chamfer-controls" id="chamfer-form" novalidate>
+            <div class="chamfer-form-head">
+              <fieldset class="mode-toggle">
+                <legend>MODE</legend>
+                <div class="mode-toggle-options">
+                  <label>
+                    <input type="radio" name="mode" value="turning" checked>
+                    <span>TURNING</span>
+                  </label>
+                  <label>
+                    <input type="radio" name="mode" value="boring">
+                    <span>BORING</span>
+                  </label>
+                </div>
+              </fieldset>
+
+              <div class="precision-row chamfer-precision-row">
+                <label for="precision">DECIMAL PLACES</label>
+                <select id="precision" name="precision">
+                  <option value="0">0</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4" selected>4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="value-groups chamfer-value-groups">
+              <fieldset class="value-group">
+                <legend>INPUTS</legend>
+
+                <div class="value-field">
+                  <label for="diameter">&Oslash;D</label>
+                  <input id="diameter" name="D" data-key="D" type="number" step="any" inputmode="decimal" autocomplete="off">
+                </div>
+
+                <div class="value-field">
+                  <label for="angle">A</label>
+                  <input id="angle" name="A" data-key="A" type="number" step="any" inputmode="decimal" autocomplete="off">
+                </div>
+
+                <div class="value-field">
+                  <label for="chamfer-size">C</label>
+                  <input id="chamfer-size" name="C" data-key="C" type="number" step="any" inputmode="decimal" autocomplete="off">
+                </div>
+
+                <div class="value-field">
+                  <label for="start-z">Z</label>
+                  <input id="start-z" name="Z" data-key="Z" type="number" step="any" inputmode="decimal" autocomplete="off">
+                </div>
+              </fieldset>
+            </div>
+
+            <div class="triangle-buttons">
+              <button class="primary-button" type="submit">SOLVE</button>
+              <button class="secondary-button" id="clear-button" type="button">CLEAR</button>
+            </div>
+
+            <p class="solver-message" id="solver-message" aria-live="polite">
+              ENTER &Oslash;D, A, C, AND Z TO SOLVE.
+            </p>
+
+            <div class="chamfer-results" id="chamfer-results" hidden aria-live="polite">
+              <h2>OUTPUT</h2>
+              <div class="chamfer-output-grid">
+                <div class="chamfer-output-card">
+                  <span>POINT 1</span>
+                  <output id="input-point-output"></output>
+                </div>
+                <div class="chamfer-output-card">
+                  <span>POINT 2</span>
+                  <output id="diameter-point-output"></output>
+                </div>
+              </div>
+              <div class="chamfer-output-meta">
+                <span id="diameter-change-output"></span>
+                <span id="z-change-output"></span>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <details class="work-panel" id="work-panel">
+          <summary>SHOW CALCULATIONS</summary>
+          <ol class="work-list" id="work-list">
+            <li>SOLVE A CHAMFER TO SEE THE CALCULATION STEPS.</li>
+          </ol>
+        </details>
+
       </section>
     </main>
+
+    <script src="lathe-chamfer.js"></script>
   </body>
 </html>

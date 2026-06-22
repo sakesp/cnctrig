@@ -671,6 +671,249 @@ h2 {
   margin-top: 8px;
 }
 
+.chamfer-workspace {
+  grid-template-columns: minmax(360px, 1.08fr) minmax(340px, 0.92fr);
+}
+
+.chamfer-form-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) max-content;
+  gap: 12px;
+  align-items: start;
+  margin-bottom: 12px;
+}
+
+.mode-toggle {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.mode-toggle legend {
+  margin-bottom: 8px;
+  color: var(--cyan);
+  font-size: 0.95rem;
+}
+
+.mode-toggle-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.mode-toggle label {
+  position: relative;
+  min-width: 0;
+}
+
+.mode-toggle input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+}
+
+.mode-toggle span {
+  display: grid;
+  min-height: 38px;
+  place-items: center;
+  padding: 7px 10px;
+  color: var(--cyan);
+  border: 1px solid rgba(110, 199, 209, 0.58);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.mode-toggle input:checked + span {
+  color: var(--screen-deep);
+  background: var(--cyan);
+  border-color: var(--cyan);
+}
+
+.mode-toggle input:focus-visible + span {
+  outline: 2px solid rgba(110, 199, 209, 0.42);
+  outline-offset: 2px;
+}
+
+.chamfer-precision-row {
+  margin-bottom: 0;
+}
+
+.chamfer-value-groups {
+  grid-template-columns: 1fr;
+}
+
+.chamfer-controls .value-field {
+  grid-template-columns: 48px minmax(0, 1fr);
+}
+
+.chamfer-results {
+  margin-top: 14px;
+  padding: 12px;
+  background: rgba(8, 10, 7, 0.48);
+  border: 1px solid rgba(110, 199, 209, 0.38);
+  border-radius: var(--radius);
+}
+
+.chamfer-results h2 {
+  margin-bottom: 10px;
+  color: var(--cyan);
+  font-size: 0.98rem;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.chamfer-output-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.chamfer-output-card {
+  min-width: 0;
+  padding: 10px;
+  background: rgba(19, 23, 17, 0.74);
+  border: 1px solid rgba(215, 255, 66, 0.22);
+  border-radius: var(--radius);
+}
+
+.chamfer-output-card span,
+.chamfer-output-meta {
+  color: #c5dd76;
+  font-size: 0.86rem;
+}
+
+.chamfer-output-card output {
+  display: block;
+  margin-top: 7px;
+  color: #ffe3a5;
+  font-size: 1.08rem;
+  line-height: 1.25;
+  text-transform: none;
+  overflow-wrap: anywhere;
+}
+
+.chamfer-output-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin-top: 10px;
+  text-transform: none;
+}
+
+.chamfer-svg {
+  min-height: 330px;
+}
+
+#chamfer-arrow path,
+#chamfer-arrow-reverse path,
+#chamfer-leader-arrow path {
+  fill: var(--amber);
+}
+
+.chamfer-solid {
+  fill: url("#chamfer-hatch");
+  stroke: none;
+  opacity: 0.42;
+}
+
+.chamfer-hatch-line {
+  stroke: rgba(215, 255, 66, 0.48);
+  stroke-width: 2;
+}
+
+.chamfer-centerline {
+  stroke: rgba(110, 199, 209, 0.46);
+  stroke-width: 2;
+  stroke-dasharray: 9 9;
+}
+
+.chamfer-profile {
+  fill: none;
+  stroke: var(--phosphor);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 6px rgba(215, 255, 66, 0.34));
+}
+
+.chamfer-cut {
+  fill: none;
+  stroke: var(--amber);
+  stroke-width: 6;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 7px rgba(255, 191, 66, 0.3));
+}
+
+.chamfer-dim-line,
+.chamfer-extension-line,
+.chamfer-leader-line {
+  fill: none;
+  stroke-linecap: round;
+}
+
+.chamfer-dim-line {
+  stroke: var(--cyan);
+  stroke-width: 1.5;
+  marker-start: url("#chamfer-arrow-reverse");
+  marker-end: url("#chamfer-arrow");
+}
+
+.chamfer-extension-line {
+  stroke: rgba(110, 199, 209, 0.46);
+  stroke-width: 1.5;
+}
+
+.chamfer-leader-line {
+  stroke: var(--amber);
+  stroke-width: 1.5;
+  marker-end: url("#chamfer-leader-arrow");
+}
+
+.chamfer-angle-arc {
+  fill: none;
+  stroke: var(--amber);
+  stroke-width: 2;
+  stroke-linecap: round;
+  marker-start: url("#chamfer-arrow-reverse");
+  marker-end: url("#chamfer-arrow");
+}
+
+.chamfer-point {
+  fill: var(--cyan);
+  stroke: rgba(8, 10, 7, 0.9);
+  stroke-width: 3;
+}
+
+.chamfer-label,
+.chamfer-coordinate-label {
+  font-family: "Share Tech Mono", "Courier New", Consolas, monospace;
+  letter-spacing: 0;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  paint-order: stroke;
+  stroke: rgba(9, 11, 8, 0.88);
+}
+
+.chamfer-label {
+  font-size: 24px;
+  stroke-width: 5px;
+}
+
+.chamfer-coordinate-label {
+  fill: var(--cyan);
+  font-size: 17px;
+  stroke-width: 4px;
+}
+
+.chamfer-label-cyan {
+  fill: var(--cyan);
+}
+
+.chamfer-label-amber {
+  fill: var(--amber);
+}
+
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -689,6 +932,14 @@ h2 {
 
   .triangle-workspace {
     grid-template-columns: 1fr;
+  }
+
+  .chamfer-form-head {
+    grid-template-columns: 1fr;
+  }
+
+  .chamfer-precision-row {
+    justify-content: flex-start;
   }
 
   .screen-shell {
@@ -767,9 +1018,25 @@ h2 {
     min-height: 0;
   }
 
+  .chamfer-svg {
+    min-height: 280px;
+  }
+
   .triangle-side-label,
   .triangle-vertex-label {
     font-size: 24px;
+  }
+
+  .chamfer-output-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .chamfer-label {
+    font-size: 20px;
+  }
+
+  .chamfer-coordinate-label {
+    font-size: 15px;
   }
 
   .solution-option {
