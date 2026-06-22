@@ -335,7 +335,7 @@
       return `M72 ${points.pointTwo.y} L${points.pointTwo.x} ${points.pointTwo.y} L${points.pointOne.x} ${points.pointOne.y} L${points.pointOne.x} 360`;
     }
 
-    return `M72 ${points.pointTwo.y} L${points.pointTwo.x} ${points.pointTwo.y} L${points.pointOne.x} ${points.pointOne.y} L520 ${points.pointOne.y} M${points.pointOne.x} ${points.pointOne.y} L${points.pointOne.x} 72`;
+    return `M72 ${points.pointTwo.y} L${points.pointTwo.x} ${points.pointTwo.y} L${points.pointOne.x} ${points.pointOne.y} M${points.pointOne.x} ${points.pointOne.y} L${points.pointOne.x} 72`;
   }
 
   function getDiameterLabelPosition(points, mode) {
