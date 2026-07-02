@@ -11,32 +11,56 @@
   const workList = document.querySelector("#work-list");
   const pointOneOutput = document.querySelector("#input-point-output");
   const pointTwoOutput = document.querySelector("#diameter-point-output");
+  const pointOneExtensionOutputCard = document.querySelector("#point-one-extension-output-card");
+  const pointOneExtensionOutput = document.querySelector("#point-one-extension-output");
+  const pointTwoExtensionOutputCard = document.querySelector("#point-two-extension-output-card");
+  const pointTwoExtensionOutput = document.querySelector("#point-two-extension-output");
   const diameterChangeOutput = document.querySelector("#diameter-change-output");
   const zChangeOutput = document.querySelector("#z-change-output");
   const fields = Object.fromEntries(
     inputKeys.map((key) => [key, document.querySelector(`[data-key="${key}"]`)])
   );
+  const extensionControls = {
+    pointOne: {
+      toggle: document.querySelector("#point-one-extension-toggle"),
+      fieldWrap: document.querySelector("#point-one-extension-field"),
+      field: document.querySelector("#point-one-extension-z"),
+    },
+    pointTwo: {
+      toggle: document.querySelector("#point-two-extension-toggle"),
+      fieldWrap: document.querySelector("#point-two-extension-field"),
+      field: document.querySelector("#point-two-extension-x"),
+      axisLabel: document.querySelector("#point-two-extension-axis-label"),
+    },
+  };
   const svgParts = {
     solid: document.querySelector("#chamfer-solid"),
     centerline: document.querySelector("#chamfer-centerline"),
     profile: document.querySelector("#chamfer-profile"),
+    pointOneExtensionCut: document.querySelector("#chamfer-point-one-extension-cut"),
     cut: document.querySelector("#chamfer-cut"),
+    pointTwoExtensionCut: document.querySelector("#chamfer-point-two-extension-cut"),
     diameterLeader: document.querySelector("#chamfer-diameter-dim"),
     sizeDim: document.querySelector("#chamfer-size-dim"),
     cExtensionOne: document.querySelector("#chamfer-c-extension-one"),
     cExtensionTwo: document.querySelector("#chamfer-c-extension-two"),
     pointOneLeader: document.querySelector("#chamfer-point-one-leader"),
     pointTwoLeader: document.querySelector("#chamfer-point-two-leader"),
+    pointOneExtensionLeader: document.querySelector("#chamfer-point-one-extension-leader"),
+    pointTwoExtensionLeader: document.querySelector("#chamfer-point-two-extension-leader"),
     angleArc: document.querySelector("#chamfer-angle-arc"),
     pointTwoDot: document.querySelector("#chamfer-point-diameter"),
     pointOneDot: document.querySelector("#chamfer-point-input"),
-    modeLabel: document.querySelector("#chamfer-mode-label"),
+    pointOneExtensionDot: document.querySelector("#chamfer-point-one-extension"),
+    pointTwoExtensionDot: document.querySelector("#chamfer-point-two-extension"),
     dLabel: document.querySelector("#chamfer-d-label"),
     cLabel: document.querySelector("#chamfer-c-label"),
     aLabel: document.querySelector("#chamfer-a-label"),
     zLabel: document.querySelector("#chamfer-z-label"),
     pointTwoLabel: document.querySelector("#chamfer-diameter-label"),
     pointOneLabel: document.querySelector("#chamfer-input-label"),
+    pointOneExtensionLabel: document.querySelector("#chamfer-point-one-extension-label"),
+    pointTwoExtensionLabel: document.querySelector("#chamfer-point-two-extension-label"),
   };
 
   let lastSolution = null;
@@ -47,6 +71,22 @@
 
   function getPrecision() {
     return Number.parseInt(precisionSelect.value, 10);
+  }
+
+  function getPointTwoExtensionAxis(mode = getMode()) {
+    return mode === "turning" ? "X+" : "X-";
+  }
+
+  function syncExtensionControls() {
+    Object.values(extensionControls).forEach((control) => {
+      control.fieldWrap.hidden = !control.toggle.checked;
+
+      if (!control.toggle.checked) {
+        control.field.classList.remove("is-entered");
+      }
+    });
+
+    extensionControls.pointTwo.axisLabel.textContent = getPointTwoExtensionAxis();
   }
 
   function toRadians(degrees) {
@@ -86,10 +126,21 @@
     return `X${formatNumber(point.x)} Z${formatNumber(point.z)}`;
   }
 
-  function parseInputs() {
+  function parseInputs(mode) {
     const values = {};
     const entered = [];
+    const extensionEntered = [];
     const errors = [];
+    const extensions = {
+      pointOne: {
+        enabled: extensionControls.pointOne.toggle.checked,
+        value: null,
+      },
+      pointTwo: {
+        enabled: extensionControls.pointTwo.toggle.checked,
+        value: null,
+      },
+    };
 
     inputKeys.forEach((key) => {
       const field = fields[key];
@@ -111,7 +162,40 @@
       values[key] = numericValue;
     });
 
-    return { values, entered, errors };
+    parseExtensionInput("pointOne", "POINT 1 Z+");
+    parseExtensionInput("pointTwo", `POINT 2 ${getPointTwoExtensionAxis(mode)}`);
+
+    return { values, entered, extensionEntered, errors, extensions };
+
+    function parseExtensionInput(key, label) {
+      if (!extensions[key].enabled) {
+        return;
+      }
+
+      const field = extensionControls[key].field;
+      const rawValue = field.value.trim();
+
+      if (!rawValue) {
+        errors.push(`ENTER ${label}.`);
+        return;
+      }
+
+      extensionEntered.push(key);
+
+      const numericValue = Number(rawValue);
+
+      if (!Number.isFinite(numericValue)) {
+        errors.push(`${label} MUST BE A NUMBER.`);
+        return;
+      }
+
+      if (numericValue <= 0) {
+        errors.push(`${label} MUST BE GREATER THAN 0.`);
+        return;
+      }
+
+      extensions[key].value = numericValue;
+    }
   }
 
   function validateInputs(parsed, mode) {
@@ -147,37 +231,73 @@
     return errors;
   }
 
-  function solveChamfer(values, mode) {
+  function solveChamfer(values, mode, extensions = {}) {
     const diameterChange = 2 * values.C;
     const zChange = values.C / Math.tan(toRadians(values.A));
     const pointOneX = mode === "turning" ? values.D - diameterChange : values.D + diameterChange;
-
-    return {
+    const pointOne = {
+      x: pointOneX,
+      z: values.Z,
+    };
+    const pointTwo = {
+      x: values.D,
+      z: values.Z - zChange,
+    };
+    const solution = {
       mode,
       values,
       diameterChange,
       zChange,
-      pointOne: {
-        x: pointOneX,
-        z: values.Z,
-      },
-      pointTwo: {
-        x: values.D,
-        z: values.Z - zChange,
-      },
+      pointOne,
+      pointTwo,
+      pointOneExtension: null,
+      pointTwoExtension: null,
     };
+
+    if (extensions.pointOne?.enabled) {
+      const zExtension = extensions.pointOne.value;
+      const xChangePerZ = (pointOne.x - pointTwo.x) / zChange;
+
+      solution.pointOneExtension = {
+        x: pointOne.x + xChangePerZ * zExtension,
+        z: pointOne.z + zExtension,
+        amount: zExtension,
+      };
+    }
+
+    if (extensions.pointTwo?.enabled) {
+      const xExtension = extensions.pointTwo.value;
+      const xDirection = mode === "turning" ? 1 : -1;
+      const zExtension = (zChange / diameterChange) * xExtension;
+
+      solution.pointTwoExtension = {
+        x: pointTwo.x + xDirection * xExtension,
+        z: pointTwo.z - zExtension,
+        amount: xExtension,
+        zExtension,
+      };
+    }
+
+    return solution;
   }
 
   function renderSolution(solution) {
     inputKeys.forEach((key) => {
       fields[key].classList.add("is-entered");
     });
+    extensionControls.pointOne.field.classList.toggle("is-entered", Boolean(solution.pointOneExtension));
+    extensionControls.pointTwo.field.classList.toggle("is-entered", Boolean(solution.pointTwoExtension));
 
     resultPanel.hidden = false;
+    pointOneExtensionOutputCard.hidden = !solution.pointOneExtension;
+    pointTwoExtensionOutputCard.hidden = !solution.pointTwoExtension;
+    pointOneExtensionOutput.textContent = solution.pointOneExtension ? formatPoint(solution.pointOneExtension) : "";
     pointOneOutput.textContent = formatPoint(solution.pointOne);
     pointTwoOutput.textContent = formatPoint(solution.pointTwo);
-    diameterChangeOutput.textContent = `X CHANGE ${formatNumber(solution.diameterChange)}`;
-    zChangeOutput.textContent = `Z CHANGE ${formatNumber(solution.zChange)}`;
+    pointTwoExtensionOutput.textContent = solution.pointTwoExtension ? formatPoint(solution.pointTwoExtension) : "";
+    const toolpathChange = getToolpathChange(solution);
+    diameterChangeOutput.textContent = `X CHANGE ${formatNumber(toolpathChange.x)}`;
+    zChangeOutput.textContent = `Z CHANGE ${formatNumber(toolpathChange.z)}`;
     renderMessage(`${solution.mode.toUpperCase()} CHAMFER SOLVED.`, false);
     renderWork(solution);
     drawDiagram(solution);
@@ -186,6 +306,26 @@
   function renderMessage(text, isError) {
     message.textContent = text;
     message.classList.toggle("is-error", isError);
+  }
+
+  function getOrderedToolpathPoints(solution) {
+    return [
+      solution.pointOneExtension,
+      solution.pointOne,
+      solution.pointTwo,
+      solution.pointTwoExtension,
+    ].filter(Boolean);
+  }
+
+  function getToolpathChange(solution) {
+    const points = getOrderedToolpathPoints(solution);
+    const firstPoint = points[0];
+    const lastPoint = points[points.length - 1];
+
+    return {
+      x: Math.abs(lastPoint.x - firstPoint.x),
+      z: Math.abs(lastPoint.z - firstPoint.z),
+    };
   }
 
   function renderWork(solution) {
@@ -207,6 +347,36 @@
       )}) = ${formatNumber(solution.zChange)}`
     );
 
+    if (solution.pointOneExtension) {
+      const xDelta = solution.pointOneExtension.x - solution.pointOne.x;
+      const xSign = xDelta >= 0 ? "+" : "-";
+
+      appendWorkItem(
+        `POINT 1.1 Z = POINT 1 Z + ${formatNumber(solution.pointOneExtension.amount)} = ${formatNumber(
+          solution.pointOneExtension.z
+        )}`
+      );
+      appendWorkItem(
+        `POINT 1.1 X = POINT 1 X ${xSign} ${formatNumber(Math.abs(xDelta))} = ${formatNumber(
+          solution.pointOneExtension.x
+        )}`
+      );
+    }
+
+    if (solution.pointTwoExtension) {
+      const xSign = solution.mode === "turning" ? "+" : "-";
+
+      appendWorkItem(
+        `POINT 2.2 X = POINT 2 X ${xSign} ${formatNumber(solution.pointTwoExtension.amount)} = ${formatNumber(
+          solution.pointTwoExtension.x
+        )}`
+      );
+      appendWorkItem(
+        `POINT 2.2 Z = POINT 2 Z - ${formatNumber(solution.pointTwoExtension.zExtension)} = ${formatNumber(
+          solution.pointTwoExtension.z
+        )}`
+      );
+    }
   }
 
   function appendWorkItem(text) {
@@ -215,9 +385,12 @@
     workList.append(item);
   }
 
-  function renderError(errors, entered) {
+  function renderError(errors, entered, extensionEntered = []) {
     inputKeys.forEach((key) => {
       fields[key].classList.toggle("is-entered", entered.includes(key));
+    });
+    Object.entries(extensionControls).forEach(([key, control]) => {
+      control.field.classList.toggle("is-entered", control.toggle.checked && extensionEntered.includes(key));
     });
     resultPanel.hidden = true;
     clearOutputs();
@@ -245,6 +418,12 @@
       fields[key].value = "";
       fields[key].classList.remove("is-entered");
     });
+    Object.values(extensionControls).forEach((control) => {
+      control.toggle.checked = false;
+      control.field.value = "";
+      control.field.classList.remove("is-entered");
+    });
+    syncExtensionControls();
 
     lastSolution = null;
     resultPanel.hidden = true;
@@ -255,8 +434,12 @@
   }
 
   function clearOutputs() {
+    pointOneExtensionOutputCard.hidden = true;
+    pointTwoExtensionOutputCard.hidden = true;
+    pointOneExtensionOutput.textContent = "";
     pointOneOutput.textContent = "";
     pointTwoOutput.textContent = "";
+    pointTwoExtensionOutput.textContent = "";
     diameterChangeOutput.textContent = "";
     zChangeOutput.textContent = "";
   }
@@ -270,16 +453,21 @@
     const cBottomY = Math.max(points.pointOne.y, points.pointTwo.y);
     const pointOneLabel = getPointOneLabelPosition(points, mode);
     const pointTwoLabel = getPointTwoLabelPosition(points, mode);
+    const pointOneExtensionLabel = points.pointOneExtension
+      ? getPointOneExtensionLabelPosition(points, mode)
+      : null;
+    const pointTwoExtensionLabel = points.pointTwoExtension
+      ? getPointTwoExtensionLabelPosition(points, mode)
+      : null;
     const diameterLabel = getDiameterLabelPosition(points, mode);
     const zLabel = getZLabelPosition(points, mode);
 
     svgParts.solid.setAttribute("d", getSolidPath(points, mode));
     setLine(svgParts.centerline, { x: 64, y: points.centerY }, { x: 584, y: points.centerY });
     svgParts.profile.setAttribute("d", getProfilePath(points, mode));
-    svgParts.cut.setAttribute(
-      "d",
-      `M${points.pointTwo.x} ${points.pointTwo.y} L${points.pointOne.x} ${points.pointOne.y}`
-    );
+    svgParts.cut.setAttribute("d", getCutPath(points));
+    renderOptionalCutSegment(svgParts.pointOneExtensionCut, points.pointOneExtension, points.pointOne);
+    renderOptionalCutSegment(svgParts.pointTwoExtensionCut, points.pointTwo, points.pointTwoExtension);
     setLine(svgParts.diameterLeader, diameterLabel.leaderStart, diameterLabel.leaderEnd);
     setLine(
       svgParts.sizeDim,
@@ -290,10 +478,25 @@
     setLine(svgParts.cExtensionTwo, { x: points.pointTwo.x + 10, y: points.pointTwo.y }, { x: cDimX + 18, y: points.pointTwo.y });
     setLine(svgParts.pointOneLeader, pointOneLabel.leaderStart, stopShort(pointOneLabel.leaderStart, points.pointOne, 12));
     setLine(svgParts.pointTwoLeader, pointTwoLabel.leaderStart, stopShort(pointTwoLabel.leaderStart, points.pointTwo, 12));
+    renderOptionalDiagramPoint(
+      points.pointOneExtension,
+      pointOneExtensionLabel,
+      svgParts.pointOneExtensionDot,
+      svgParts.pointOneExtensionLabel,
+      svgParts.pointOneExtensionLeader,
+      "POINT 1.1"
+    );
+    renderOptionalDiagramPoint(
+      points.pointTwoExtension,
+      pointTwoExtensionLabel,
+      svgParts.pointTwoExtensionDot,
+      svgParts.pointTwoExtensionLabel,
+      svgParts.pointTwoExtensionLeader,
+      "POINT 2.2"
+    );
     svgParts.angleArc.setAttribute("d", getAngleArc(points.pointTwo, preview.values.A, mode));
     setCircle(svgParts.pointTwoDot, points.pointTwo, 6);
     setCircle(svgParts.pointOneDot, points.pointOne, 6);
-    setText(svgParts.modeLabel, mode === "turning" ? "TURNING" : "BORING", 88, 44);
     setText(svgParts.dLabel, "\u00d8D", diameterLabel.text.x, diameterLabel.text.y);
     setText(svgParts.cLabel, "C", cDimX + 30, (cTopY + cBottomY) / 2);
     const angleLabel = getAngleLabelPosition(points.pointTwo, preview.values.A, mode);
@@ -303,7 +506,47 @@
     setText(svgParts.pointTwoLabel, "POINT 2", pointTwoLabel.text.x, pointTwoLabel.text.y);
   }
 
+  function getCutPath(points) {
+    return `M${points.pointOne.x} ${points.pointOne.y} L${points.pointTwo.x} ${points.pointTwo.y}`;
+  }
+
+  function renderOptionalCutSegment(path, start, end) {
+    const hidden = !start || !end;
+
+    setElementHidden(path, hidden);
+
+    if (hidden) {
+      return;
+    }
+
+    path.setAttribute("d", `M${start.x} ${start.y} L${end.x} ${end.y}`);
+  }
+
+  function renderOptionalDiagramPoint(point, labelPosition, dot, label, leader, labelText) {
+    const hidden = !point || !labelPosition;
+
+    setElementHidden(dot, hidden);
+    setElementHidden(label, hidden);
+    setElementHidden(leader, hidden);
+
+    if (hidden) {
+      return;
+    }
+
+    setCircle(dot, point, 6);
+    setText(label, labelText, labelPosition.text.x, labelPosition.text.y);
+    setLine(leader, labelPosition.leaderStart, stopShort(labelPosition.leaderStart, point, 11));
+  }
+
+  function setElementHidden(element, hidden) {
+    element.style.display = hidden ? "none" : "";
+  }
+
   function getDiagramPoints(solution, mode) {
+    if (solution.pointOneExtension || solution.pointTwoExtension) {
+      return getExtendedDiagramPoints(solution, mode);
+    }
+
     const rawDz = Math.max(solution.zChange, tolerance);
     const rawRadialChange = Math.max(solution.values.C, tolerance);
     const scale = Math.min(180 / rawDz, 112 / rawRadialChange);
@@ -320,6 +563,55 @@
       pointOne,
       pointTwo,
     };
+  }
+
+  function getExtendedDiagramPoints(solution, mode) {
+    const worldPoints = {
+      pointOne: solution.pointOne,
+      pointTwo: solution.pointTwo,
+      pointOneExtension: solution.pointOneExtension,
+      pointTwoExtension: solution.pointTwoExtension,
+    };
+    const visiblePoints = Object.values(worldPoints).filter(Boolean);
+    const zValues = visiblePoints.map((point) => point.z);
+    const radialValues = visiblePoints.map((point) => getRadialOffset(point, solution, mode));
+    const minZ = Math.min(...zValues);
+    const maxZ = Math.max(...zValues);
+    const minRadial = Math.min(...radialValues);
+    const maxRadial = Math.max(...radialValues);
+    const rawDz = Math.max(maxZ - minZ, tolerance);
+    const rawRadialRange = Math.max(maxRadial - minRadial, tolerance);
+    const scale = Math.min(304 / rawDz, 178 / rawRadialRange);
+    const left = 150;
+    const top = mode === "turning" ? 92 : 116;
+
+    return {
+      centerY: 374,
+      pointOne: toExtendedScreenPoint(solution.pointOne),
+      pointTwo: toExtendedScreenPoint(solution.pointTwo),
+      pointOneExtension: solution.pointOneExtension ? toExtendedScreenPoint(solution.pointOneExtension) : null,
+      pointTwoExtension: solution.pointTwoExtension ? toExtendedScreenPoint(solution.pointTwoExtension) : null,
+    };
+
+    function toExtendedScreenPoint(point) {
+      const radial = getRadialOffset(point, solution, mode);
+
+      return {
+        x: left + (point.z - minZ) * scale,
+        y:
+          mode === "turning"
+            ? top + (radial - minRadial) * scale
+            : top + (maxRadial - radial) * scale,
+      };
+    }
+  }
+
+  function getRadialOffset(point, solution, mode) {
+    if (mode === "turning") {
+      return (solution.pointTwo.x - point.x) / 2;
+    }
+
+    return (point.x - solution.pointTwo.x) / 2;
   }
 
   function getSolidPath(points, mode) {
@@ -387,6 +679,30 @@
     };
   }
 
+  function getPointOneExtensionLabelPosition(points, mode) {
+    const text = {
+      x: clamp(points.pointOneExtension.x + 84, 292, 570),
+      y: points.pointOneExtension.y + (mode === "turning" ? 28 : -28),
+    };
+
+    return {
+      text,
+      leaderStart: { x: text.x - 42, y: text.y - (mode === "turning" ? 8 : -8) },
+    };
+  }
+
+  function getPointTwoExtensionLabelPosition(points, mode) {
+    const text = {
+      x: clamp(points.pointTwoExtension.x + 76, 190, 430),
+      y: points.pointTwoExtension.y - 38,
+    };
+
+    return {
+      text,
+      leaderStart: { x: text.x - 36, y: text.y + 14 },
+    };
+  }
+
   function getAngleArc(point, angle, mode) {
     const radius = 86;
     const direction = mode === "turning" ? 1 : -1;
@@ -451,15 +767,15 @@
     event.preventDefault();
 
     const mode = getMode();
-    const parsed = parseInputs();
+    const parsed = parseInputs(mode);
     const errors = validateInputs(parsed, mode);
 
     if (errors.length > 0) {
-      renderError(errors, parsed.entered);
+      renderError(errors, parsed.entered, parsed.extensionEntered);
       return;
     }
 
-    lastSolution = solveChamfer(parsed.values, mode);
+    lastSolution = solveChamfer(parsed.values, mode, parsed.extensions);
     renderSolution(lastSolution);
   });
 
@@ -482,11 +798,25 @@
     });
   });
 
+  Object.values(extensionControls).forEach((control) => {
+    control.toggle.addEventListener("change", () => {
+      syncExtensionControls();
+      clearSolutionState("EXTENDED TOOLPATH CHANGED. PRESS SOLVE TO UPDATE.");
+    });
+
+    control.field.addEventListener("input", () => {
+      const hasValue = control.field.value.trim() !== "";
+      control.field.classList.toggle("is-entered", control.toggle.checked && hasValue);
+      clearSolutionState("INPUT CHANGED. PRESS SOLVE TO UPDATE.");
+    });
+  });
+
   form.addEventListener("change", (event) => {
     if (event.target.name !== "mode") {
       return;
     }
 
+    syncExtensionControls();
     clearSolutionState("MODE CHANGED. PRESS SOLVE TO UPDATE.");
     drawDiagram(null, getMode());
   });
@@ -499,5 +829,6 @@
     renderSolution(lastSolution);
   });
 
+  syncExtensionControls();
   drawDiagram(null, getMode());
 })();

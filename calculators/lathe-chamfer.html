@@ -52,21 +52,28 @@
               <line id="chamfer-c-extension-one" class="chamfer-extension-line"></line>
               <line id="chamfer-c-extension-two" class="chamfer-extension-line"></line>
               <path id="chamfer-profile" class="chamfer-profile"></path>
+              <path id="chamfer-point-one-extension-cut" class="chamfer-cut chamfer-cut-extension"></path>
               <path id="chamfer-cut" class="chamfer-cut"></path>
+              <path id="chamfer-point-two-extension-cut" class="chamfer-cut chamfer-cut-extension"></path>
               <line id="chamfer-diameter-dim" class="chamfer-leader-line"></line>
               <line id="chamfer-size-dim" class="chamfer-dim-line"></line>
               <line id="chamfer-point-one-leader" class="chamfer-leader-line"></line>
               <line id="chamfer-point-two-leader" class="chamfer-leader-line"></line>
+              <line id="chamfer-point-one-extension-leader" class="chamfer-leader-line"></line>
+              <line id="chamfer-point-two-extension-leader" class="chamfer-leader-line"></line>
               <path id="chamfer-angle-arc" class="chamfer-angle-arc"></path>
               <circle id="chamfer-point-diameter" class="chamfer-point"></circle>
               <circle id="chamfer-point-input" class="chamfer-point"></circle>
-              <text id="chamfer-mode-label" class="chamfer-label chamfer-label-cyan"></text>
+              <circle id="chamfer-point-one-extension" class="chamfer-point chamfer-extension-point"></circle>
+              <circle id="chamfer-point-two-extension" class="chamfer-point chamfer-extension-point"></circle>
               <text id="chamfer-d-label" class="chamfer-label chamfer-label-cyan">&Oslash;D</text>
               <text id="chamfer-c-label" class="chamfer-label chamfer-label-amber">C</text>
               <text id="chamfer-a-label" class="chamfer-label chamfer-label-amber">A</text>
               <text id="chamfer-z-label" class="chamfer-label chamfer-label-cyan">Z</text>
               <text id="chamfer-diameter-label" class="chamfer-coordinate-label"></text>
               <text id="chamfer-input-label" class="chamfer-coordinate-label"></text>
+              <text id="chamfer-point-one-extension-label" class="chamfer-coordinate-label"></text>
+              <text id="chamfer-point-two-extension-label" class="chamfer-coordinate-label"></text>
             </svg>
           </div>
 
@@ -123,6 +130,30 @@
                   <input id="start-z" name="Z" data-key="Z" type="number" step="any" inputmode="decimal" autocomplete="off">
                 </div>
               </fieldset>
+
+              <fieldset class="value-group chamfer-extension-options">
+                <legend>EXTENDED TOOLPATH</legend>
+
+                <label class="chamfer-check-option" for="point-one-extension-toggle">
+                  <input id="point-one-extension-toggle" name="pointOneExtensionEnabled" type="checkbox">
+                  <span>POINT 1 EXTENDED TOOLPATH</span>
+                </label>
+
+                <div class="value-field chamfer-extension-field" id="point-one-extension-field" hidden>
+                  <label for="point-one-extension-z">Z+</label>
+                  <input id="point-one-extension-z" name="pointOneExtensionZ" data-extension-key="pointOne" type="number" step="any" inputmode="decimal" autocomplete="off">
+                </div>
+
+                <label class="chamfer-check-option" for="point-two-extension-toggle">
+                  <input id="point-two-extension-toggle" name="pointTwoExtensionEnabled" type="checkbox">
+                  <span>POINT 2 EXTENDED TOOL PATH</span>
+                </label>
+
+                <div class="value-field chamfer-extension-field" id="point-two-extension-field" hidden>
+                  <label id="point-two-extension-axis-label" for="point-two-extension-x">X+</label>
+                  <input id="point-two-extension-x" name="pointTwoExtensionX" data-extension-key="pointTwo" type="number" step="any" inputmode="decimal" autocomplete="off">
+                </div>
+              </fieldset>
             </div>
 
             <div class="triangle-buttons">
@@ -137,6 +168,10 @@
             <div class="chamfer-results" id="chamfer-results" hidden aria-live="polite">
               <h2>OUTPUT</h2>
               <div class="chamfer-output-grid">
+                <div class="chamfer-output-card" id="point-one-extension-output-card" hidden>
+                  <span>POINT 1.1</span>
+                  <output id="point-one-extension-output"></output>
+                </div>
                 <div class="chamfer-output-card">
                   <span>POINT 1</span>
                   <output id="input-point-output"></output>
@@ -144,6 +179,10 @@
                 <div class="chamfer-output-card">
                   <span>POINT 2</span>
                   <output id="diameter-point-output"></output>
+                </div>
+                <div class="chamfer-output-card" id="point-two-extension-output-card" hidden>
+                  <span>POINT 2.2</span>
+                  <output id="point-two-extension-output"></output>
                 </div>
               </div>
               <div class="chamfer-output-meta">

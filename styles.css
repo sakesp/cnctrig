@@ -807,6 +807,41 @@ h2 {
   grid-template-columns: 48px minmax(0, 1fr);
 }
 
+.chamfer-extension-options {
+  padding-top: 12px;
+  border-top: 1px solid rgba(215, 255, 66, 0.16);
+}
+
+.chamfer-check-option {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 9px;
+  align-items: center;
+  margin-bottom: 8px;
+  color: #c5dd76;
+  font-size: 0.94rem;
+  cursor: pointer;
+}
+
+.chamfer-check-option input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--cyan);
+}
+
+.chamfer-check-option span {
+  line-height: 1.25;
+}
+
+.chamfer-extension-field {
+  margin-left: 27px;
+}
+
+.chamfer-extension-field[hidden] {
+  display: none;
+}
+
 .chamfer-results {
   margin-top: 14px;
   padding: 12px;
@@ -903,6 +938,10 @@ h2 {
   stroke-width: 6;
   stroke-linecap: round;
   filter: drop-shadow(0 0 7px rgba(255, 191, 66, 0.3));
+}
+
+.chamfer-cut-extension {
+  stroke-dasharray: 10 10;
 }
 
 .chamfer-dim-line,
