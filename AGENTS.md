@@ -37,4 +37,4 @@ This is a static GitHub Pages site for machinist-focused trig and geometry calcu
 - Do not add dependencies without asking.
 - Do not use external APIs.
 - Do not put secrets, API keys, or credentials in the project.
-- When adding a calculator, include example test values and expected results.
+- When adding a calculator, use test values to confirm expected results before deployment.
