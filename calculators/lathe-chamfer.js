@@ -451,16 +451,24 @@
     const cDimX = points.pointOne.x + 86;
     const cTopY = Math.min(points.pointOne.y, points.pointTwo.y);
     const cBottomY = Math.max(points.pointOne.y, points.pointTwo.y);
-    const pointOneLabel = getPointOneLabelPosition(points, mode);
-    const pointTwoLabel = getPointTwoLabelPosition(points, mode);
-    const pointOneExtensionLabel = points.pointOneExtension
-      ? getPointOneExtensionLabelPosition(points, mode)
-      : null;
-    const pointTwoExtensionLabel = points.pointTwoExtension
-      ? getPointTwoExtensionLabelPosition(points, mode)
-      : null;
     const diameterLabel = getDiameterLabelPosition(points, mode);
     const zLabel = getZLabelPosition(points, mode);
+    const angleLabel = getAngleLabelPosition(points.pointTwo, preview.values.A, mode);
+    const sizeDimStart = { x: cDimX, y: cTopY + 8 };
+    const sizeDimEnd = { x: cDimX, y: cBottomY - 8 };
+    const cExtensionOneStart = { x: points.pointOne.x + 10, y: points.pointOne.y };
+    const cExtensionOneEnd = { x: cDimX + 18, y: points.pointOne.y };
+    const cExtensionTwoStart = { x: points.pointTwo.x + 10, y: points.pointTwo.y };
+    const cExtensionTwoEnd = { x: cDimX + 18, y: points.pointTwo.y };
+    const pointLabels = getPointLabelLayout(points, mode, [
+      makeTextBox("\u00d8D", diameterLabel.text.x, diameterLabel.text.y, "dimension"),
+      makeTextBox("C", cDimX + 30, (cTopY + cBottomY) / 2, "dimension"),
+      makeTextBox("A", angleLabel.x, angleLabel.y, "dimension"),
+      makeTextBox("Z", zLabel.x, zLabel.y, "dimension"),
+      makeLineBox(sizeDimStart, sizeDimEnd, 8),
+      makeLineBox(cExtensionOneStart, cExtensionOneEnd, 8),
+      makeLineBox(cExtensionTwoStart, cExtensionTwoEnd, 8),
+    ]);
 
     svgParts.solid.setAttribute("d", getSolidPath(points, mode));
     setLine(svgParts.centerline, { x: 64, y: points.centerY }, { x: 584, y: points.centerY });
@@ -469,18 +477,14 @@
     renderOptionalCutSegment(svgParts.pointOneExtensionCut, points.pointOneExtension, points.pointOne);
     renderOptionalCutSegment(svgParts.pointTwoExtensionCut, points.pointTwo, points.pointTwoExtension);
     setLine(svgParts.diameterLeader, diameterLabel.leaderStart, diameterLabel.leaderEnd);
-    setLine(
-      svgParts.sizeDim,
-      { x: cDimX, y: cTopY + 8 },
-      { x: cDimX, y: cBottomY - 8 }
-    );
-    setLine(svgParts.cExtensionOne, { x: points.pointOne.x + 10, y: points.pointOne.y }, { x: cDimX + 18, y: points.pointOne.y });
-    setLine(svgParts.cExtensionTwo, { x: points.pointTwo.x + 10, y: points.pointTwo.y }, { x: cDimX + 18, y: points.pointTwo.y });
-    setLine(svgParts.pointOneLeader, pointOneLabel.leaderStart, stopShort(pointOneLabel.leaderStart, points.pointOne, 12));
-    setLine(svgParts.pointTwoLeader, pointTwoLabel.leaderStart, stopShort(pointTwoLabel.leaderStart, points.pointTwo, 12));
+    setLine(svgParts.sizeDim, sizeDimStart, sizeDimEnd);
+    setLine(svgParts.cExtensionOne, cExtensionOneStart, cExtensionOneEnd);
+    setLine(svgParts.cExtensionTwo, cExtensionTwoStart, cExtensionTwoEnd);
+    setLine(svgParts.pointOneLeader, pointLabels.pointOne.leaderStart, stopShort(pointLabels.pointOne.leaderStart, points.pointOne, 12));
+    setLine(svgParts.pointTwoLeader, pointLabels.pointTwo.leaderStart, stopShort(pointLabels.pointTwo.leaderStart, points.pointTwo, 12));
     renderOptionalDiagramPoint(
       points.pointOneExtension,
-      pointOneExtensionLabel,
+      pointLabels.pointOneExtension,
       svgParts.pointOneExtensionDot,
       svgParts.pointOneExtensionLabel,
       svgParts.pointOneExtensionLeader,
@@ -488,7 +492,7 @@
     );
     renderOptionalDiagramPoint(
       points.pointTwoExtension,
-      pointTwoExtensionLabel,
+      pointLabels.pointTwoExtension,
       svgParts.pointTwoExtensionDot,
       svgParts.pointTwoExtensionLabel,
       svgParts.pointTwoExtensionLeader,
@@ -499,11 +503,10 @@
     setCircle(svgParts.pointOneDot, points.pointOne, 6);
     setText(svgParts.dLabel, "\u00d8D", diameterLabel.text.x, diameterLabel.text.y);
     setText(svgParts.cLabel, "C", cDimX + 30, (cTopY + cBottomY) / 2);
-    const angleLabel = getAngleLabelPosition(points.pointTwo, preview.values.A, mode);
     setText(svgParts.aLabel, "A", angleLabel.x, angleLabel.y);
     setText(svgParts.zLabel, "Z", zLabel.x, zLabel.y);
-    setText(svgParts.pointOneLabel, "POINT 1", pointOneLabel.text.x, pointOneLabel.text.y);
-    setText(svgParts.pointTwoLabel, "POINT 2", pointTwoLabel.text.x, pointTwoLabel.text.y);
+    setText(svgParts.pointOneLabel, "POINT 1", pointLabels.pointOne.text.x, pointLabels.pointOne.text.y);
+    setText(svgParts.pointTwoLabel, "POINT 2", pointLabels.pointTwo.text.x, pointLabels.pointTwo.text.y);
   }
 
   function getCutPath(points) {
@@ -655,52 +658,323 @@
     };
   }
 
-  function getPointOneLabelPosition(points, mode) {
-    const text = {
-      x: clamp(points.pointOne.x + 96, 300, 548),
-      y: points.pointOne.y + (mode === "turning" ? 28 : -28),
-    };
+  function getPointLabelLayout(points, mode, fixedBoxes) {
+    const stockPolygon = getStockPolygon(points, mode);
+    const fixedSegments = getFixedSegments(points);
+    const placed = [];
+    const layout = {};
+    const labelRequests = [
+      { key: "pointOne", point: points.pointOne, text: "POINT 1", zone: "inside" },
+      { key: "pointTwo", point: points.pointTwo, text: "POINT 2", zone: "inside" },
+      { key: "pointOneExtension", point: points.pointOneExtension, text: "POINT 1.1", zone: "outside" },
+      { key: "pointTwoExtension", point: points.pointTwoExtension, text: "POINT 2.2", zone: "outside" },
+    ];
+
+    labelRequests.forEach((request) => {
+      if (!request.point) {
+        layout[request.key] = null;
+        return;
+      }
+
+      const label = getBestPointLabelPosition(request, {
+        fixedBoxes,
+        fixedSegments,
+        placed,
+        stockPolygon,
+      });
+
+      layout[request.key] = label;
+      placed.push({
+        box: label.box,
+        leader: { start: label.leaderStart, end: request.point },
+      });
+    });
+
+    return layout;
+  }
+
+  function getBestPointLabelPosition(request, context) {
+    return getPointLabelCandidates(request).reduce((best, candidate) => {
+      const score = scorePointLabelCandidate(candidate, request, context);
+
+      return !best || score < best.score ? { ...candidate, score } : best;
+    }, null);
+  }
+
+  function getPointLabelCandidates(request) {
+    const distances = request.zone === "inside" ? [66, 84, 104, 126, 148] : [60, 78, 100, 124, 150];
+    const directions = [
+      { x: 1, y: 0 },
+      { x: 0.86, y: -0.5 },
+      { x: 0.86, y: 0.5 },
+      { x: 0, y: -1 },
+      { x: 0, y: 1 },
+      { x: -0.86, y: -0.5 },
+      { x: -0.86, y: 0.5 },
+      { x: -1, y: 0 },
+      { x: 0.55, y: -0.83 },
+      { x: 0.55, y: 0.83 },
+      { x: -0.55, y: -0.83 },
+      { x: -0.55, y: 0.83 },
+    ];
+    const candidates = [];
+
+    distances.forEach((distance) => {
+      directions.forEach((direction) => {
+        const text = {
+          x: request.point.x + direction.x * distance,
+          y: request.point.y + direction.y * distance,
+        };
+        const box = makeTextBox(request.text, text.x, text.y, "coordinate");
+
+        candidates.push({
+          box,
+          direction,
+          distance,
+          leaderStart: getLeaderStart(box, request.point),
+          text,
+        });
+      });
+    });
+
+    return candidates;
+  }
+
+  function scorePointLabelCandidate(candidate, request, context) {
+    const leader = { start: candidate.leaderStart, end: request.point };
+    const obstacles = [
+      ...context.fixedBoxes,
+      ...context.placed.map((placedLabel) => placedLabel.box),
+      ...getPointObstacleBoxes(context.fixedSegments),
+    ];
+    let score = candidate.distance;
+    const leaderLength = Math.hypot(leader.end.x - leader.start.x, leader.end.y - leader.start.y);
+
+    score += getZonePenalty(candidate.box, context.stockPolygon, request.zone);
+    score += getBoundsPenalty(candidate.box);
+    score += getPreferredDirectionPenalty(candidate.direction, request.key);
+    score += leaderLength < 24 ? 1400 + (24 - leaderLength) * 30 : 0;
+
+    obstacles.forEach((box) => {
+      if (boxesOverlap(candidate.box, box)) {
+        score += 1800 + getBoxOverlapArea(candidate.box, box) * 4;
+      }
+    });
+
+    context.placed.forEach((placedLabel) => {
+      if (segmentsIntersect(leader.start, leader.end, placedLabel.leader.start, placedLabel.leader.end)) {
+        score += 1800;
+      }
+    });
+
+    context.fixedSegments.forEach((segment) => {
+      if (pointsAlmostEqual(segment.start, request.point) || pointsAlmostEqual(segment.end, request.point)) {
+        return;
+      }
+
+      if (segmentsIntersect(leader.start, leader.end, segment.start, segment.end)) {
+        score += 850;
+      }
+    });
+
+    return score;
+  }
+
+  function getStockPolygon(points, mode) {
+    if (mode === "turning") {
+      return [
+        { x: 72, y: points.pointTwo.y },
+        { x: points.pointTwo.x, y: points.pointTwo.y },
+        { x: points.pointOne.x, y: points.pointOne.y },
+        { x: points.pointOne.x, y: 360 },
+        { x: 72, y: 360 },
+      ];
+    }
+
+    return [
+      { x: 72, y: 72 },
+      { x: points.pointOne.x, y: 72 },
+      { x: points.pointOne.x, y: points.pointOne.y },
+      { x: points.pointTwo.x, y: points.pointTwo.y },
+      { x: 72, y: points.pointTwo.y },
+    ];
+  }
+
+  function getFixedSegments(points) {
+    return [
+      points.pointOneExtension ? { start: points.pointOneExtension, end: points.pointOne } : null,
+      { start: points.pointOne, end: points.pointTwo },
+      points.pointTwoExtension ? { start: points.pointTwo, end: points.pointTwoExtension } : null,
+    ].filter(Boolean);
+  }
+
+  function getPointObstacleBoxes(segments) {
+    const uniquePoints = [];
+
+    segments.forEach((segment) => {
+      [segment.start, segment.end].forEach((point) => {
+        if (!uniquePoints.some((existing) => pointsAlmostEqual(existing, point))) {
+          uniquePoints.push(point);
+        }
+      });
+    });
+
+    return uniquePoints.map((point) => ({
+      left: point.x - 12,
+      right: point.x + 12,
+      top: point.y - 12,
+      bottom: point.y + 12,
+    }));
+  }
+
+  function makeTextBox(text, x, y, size = "coordinate") {
+    const width = text.length * (size === "dimension" ? 14 : 10);
+    const height = size === "dimension" ? 28 : 22;
 
     return {
-      text,
-      leaderStart: { x: text.x - 50, y: text.y - (mode === "turning" ? 8 : -8) },
+      left: x - width / 2,
+      right: x + width / 2,
+      top: y - height / 2,
+      bottom: y + height / 2,
     };
   }
 
-  function getPointTwoLabelPosition(points, mode) {
-    const text = {
-      x: mode === "turning" ? points.pointTwo.x + 22 : points.pointTwo.x + 68,
-      y: points.pointTwo.y + (mode === "turning" ? 96 : 66),
-    };
-
+  function makeLineBox(start, end, padding) {
     return {
-      text,
-      leaderStart: { x: text.x - (mode === "turning" ? 8 : 28), y: text.y - 22 },
+      left: Math.min(start.x, end.x) - padding,
+      right: Math.max(start.x, end.x) + padding,
+      top: Math.min(start.y, end.y) - padding,
+      bottom: Math.max(start.y, end.y) + padding,
     };
   }
 
-  function getPointOneExtensionLabelPosition(points, mode) {
-    const text = {
-      x: clamp(points.pointOneExtension.x + 84, 292, 570),
-      y: points.pointOneExtension.y + (mode === "turning" ? 28 : -28),
-    };
-
+  function getLeaderStart(box, point) {
     return {
-      text,
-      leaderStart: { x: text.x - 42, y: text.y - (mode === "turning" ? 8 : -8) },
+      x: clamp(point.x, box.left, box.right),
+      y: clamp(point.y, box.top, box.bottom),
     };
   }
 
-  function getPointTwoExtensionLabelPosition(points, mode) {
-    const text = {
-      x: clamp(points.pointTwoExtension.x + 76, 190, 430),
-      y: points.pointTwoExtension.y - 38,
-    };
+  function getZonePenalty(box, polygon, zone) {
+    const center = getBoxCenter(box);
+    const corners = getBoxCorners(box);
+    const insideCorners = corners.filter((corner) => pointInPolygon(corner, polygon)).length;
+    const centerInside = pointInPolygon(center, polygon);
 
-    return {
-      text,
-      leaderStart: { x: text.x - 36, y: text.y + 14 },
+    if (zone === "inside") {
+      if (insideCorners === corners.length) {
+        return 0;
+      }
+
+      return centerInside ? 900 : 12000;
+    }
+
+    if (insideCorners === 0 && !centerInside) {
+      return 0;
+    }
+
+    return centerInside ? 12000 : 900;
+  }
+
+  function getBoundsPenalty(box) {
+    const bounds = { left: 28, right: 612, top: 28, bottom: 402 };
+    const overflow =
+      Math.max(0, bounds.left - box.left) +
+      Math.max(0, box.right - bounds.right) +
+      Math.max(0, bounds.top - box.top) +
+      Math.max(0, box.bottom - bounds.bottom);
+
+    return overflow > 0 ? 2200 + overflow * 22 : 0;
+  }
+
+  function getPreferredDirectionPenalty(direction, key) {
+    const preferredDirections = {
+      pointOne: [
+        { x: -0.8, y: 0.6 },
+        { x: -1, y: 0 },
+      ],
+      pointTwo: [
+        { x: 0.8, y: 0.6 },
+        { x: 1, y: 0 },
+      ],
+      pointOneExtension: [
+        { x: 0.8, y: 0.6 },
+        { x: 1, y: 0 },
+      ],
+      pointTwoExtension: [
+        { x: 0.8, y: -0.6 },
+        { x: 1, y: 0 },
+      ],
     };
+    const bestDot = Math.max(
+      ...preferredDirections[key].map((preferred) => direction.x * preferred.x + direction.y * preferred.y)
+    );
+
+    return (1 - bestDot) * 18;
+  }
+
+  function getBoxCenter(box) {
+    return {
+      x: (box.left + box.right) / 2,
+      y: (box.top + box.bottom) / 2,
+    };
+  }
+
+  function getBoxCorners(box) {
+    return [
+      { x: box.left, y: box.top },
+      { x: box.right, y: box.top },
+      { x: box.right, y: box.bottom },
+      { x: box.left, y: box.bottom },
+    ];
+  }
+
+  function pointInPolygon(point, polygon) {
+    let inside = false;
+
+    for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+      const start = polygon[i];
+      const end = polygon[j];
+      const intersects =
+        start.y > point.y !== end.y > point.y &&
+        point.x < ((end.x - start.x) * (point.y - start.y)) / (end.y - start.y) + start.x;
+
+      if (intersects) {
+        inside = !inside;
+      }
+    }
+
+    return inside;
+  }
+
+  function boxesOverlap(first, second) {
+    return first.left < second.right && first.right > second.left && first.top < second.bottom && first.bottom > second.top;
+  }
+
+  function getBoxOverlapArea(first, second) {
+    if (!boxesOverlap(first, second)) {
+      return 0;
+    }
+
+    return (Math.min(first.right, second.right) - Math.max(first.left, second.left)) *
+      (Math.min(first.bottom, second.bottom) - Math.max(first.top, second.top));
+  }
+
+  function segmentsIntersect(a, b, c, d) {
+    const denominator = (b.x - a.x) * (d.y - c.y) - (b.y - a.y) * (d.x - c.x);
+
+    if (Math.abs(denominator) < tolerance) {
+      return false;
+    }
+
+    const ua = ((d.x - c.x) * (a.y - c.y) - (d.y - c.y) * (a.x - c.x)) / denominator;
+    const ub = ((b.x - a.x) * (a.y - c.y) - (b.y - a.y) * (a.x - c.x)) / denominator;
+
+    return ua > 0.04 && ua < 0.96 && ub > 0.04 && ub < 0.96;
+  }
+
+  function pointsAlmostEqual(first, second) {
+    return Math.abs(first.x - second.x) < 0.01 && Math.abs(first.y - second.y) < 0.01;
   }
 
   function getAngleArc(point, angle, mode) {
