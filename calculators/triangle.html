@@ -3,128 +3,148 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#080a08">
     <title>TRIANGLE SOLVER | CNC TRIG</title>
+    <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
     <link rel="stylesheet" href="../styles.css">
   </head>
   <body>
-    <header class="site-header">
-      <a class="brand" href="../index.html" aria-label="CNC TRIG HOME">
-        <span>CNCTRIG.COM</span>
-      </a>
-    </header>
+    <div class="crt">
+      <header class="term-bar">
+        <a class="brand" href="../index.html" aria-label="CNC TRIG HOME">
+          <span class="brand-mark" aria-hidden="true"></span>CNCTRIG.COM
+        </a>
+        <div class="term-meta">
+          <span class="term-tag">PRG 01 &middot; GENERAL</span>
+          <span class="term-clock" data-clock>--:--:--</span>
+        </div>
+      </header>
 
-    <main class="triangle-main">
-      <section class="triangle-board" aria-labelledby="page-title">
-        <div class="triangle-topbar">
-          <div>
-            <p class="eyebrow">GENERAL</p>
-            <h1 id="page-title">TRIANGLE SOLVER</h1>
+      <main class="term-main">
+        <section aria-labelledby="page-title">
+          <div class="calc-topbar">
+            <div>
+              <h1 id="page-title">TRIANGLE SOLVER</h1>
+              <p class="calc-guidance">
+                ENTER EXACTLY 3 VALUES. AT LEAST ONE VALUE MUST BE A SIDE. IF ALL 3 ANGLES ARE
+                KNOWN, CLEAR ONE ANGLE AND ENTER A SIDE.
+              </p>
+            </div>
+
+            <a class="back-link" href="../index.html">&#9664; MENU</a>
           </div>
 
-          <a class="back-link compact-link" href="../index.html">BACK</a>
-        </div>
+          <div class="triangle-workspace">
+            <div class="triangle-diagram-wrap" aria-label="TRIANGLE DIAGRAM">
+              <div class="diagram-caption" aria-hidden="true">
+                <span>GRAPHIC</span>
+                <span>SCALE AUTO</span>
+              </div>
+              <svg class="triangle-svg" viewBox="0 0 640 430" role="img" aria-labelledby="triangle-svg-title">
+                <title id="triangle-svg-title">Triangle diagram with vertices A, B, C and sides a, b, c</title>
+                <polygon id="triangle-shape" class="triangle-shape" points=""></polygon>
+                <line id="triangle-line-ab" class="triangle-line"></line>
+                <line id="triangle-line-bc" class="triangle-line"></line>
+                <line id="triangle-line-ca" class="triangle-line"></line>
+                <text id="side-label-a" class="triangle-side-label">a</text>
+                <text id="side-label-b" class="triangle-side-label">b</text>
+                <text id="side-label-c" class="triangle-side-label">c</text>
+                <text id="vertex-label-a" class="triangle-vertex-label">A</text>
+                <text id="vertex-label-b" class="triangle-vertex-label">B</text>
+                <text id="vertex-label-c" class="triangle-vertex-label">C</text>
+              </svg>
+            </div>
 
-        <p class="triangle-guidance">
-          ENTER EXACTLY 3 VALUES. AT LEAST ONE VALUE MUST BE A SIDE. IF ALL 3 ANGLES ARE KNOWN,
-          CLEAR ONE ANGLE AND ENTER A SIDE.
-        </p>
+            <form class="triangle-controls" id="triangle-form" novalidate>
+              <div class="precision-row">
+                <label for="precision">DECIMAL PLACES</label>
+                <select id="precision" name="precision">
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4" selected>4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                </select>
+              </div>
 
-        <div class="triangle-workspace">
-          <div class="triangle-diagram-wrap" aria-label="TRIANGLE DIAGRAM">
-            <svg class="triangle-svg" viewBox="0 0 640 430" role="img" aria-labelledby="triangle-svg-title">
-              <title id="triangle-svg-title">Triangle diagram with vertices A, B, C and sides a, b, c</title>
-              <polygon id="triangle-shape" class="triangle-shape" points=""></polygon>
-              <line id="triangle-line-ab" class="triangle-line"></line>
-              <line id="triangle-line-bc" class="triangle-line"></line>
-              <line id="triangle-line-ca" class="triangle-line"></line>
-              <text id="side-label-a" class="triangle-side-label">a</text>
-              <text id="side-label-b" class="triangle-side-label">b</text>
-              <text id="side-label-c" class="triangle-side-label">c</text>
-              <text id="vertex-label-a" class="triangle-vertex-label">A</text>
-              <text id="vertex-label-b" class="triangle-vertex-label">B</text>
-              <text id="vertex-label-c" class="triangle-vertex-label">C</text>
-            </svg>
+              <div class="value-groups">
+                <fieldset class="value-group">
+                  <legend>SIDES</legend>
+
+                  <div class="value-field">
+                    <label for="side-a">a</label>
+                    <input id="side-a" name="a" data-key="a" data-kind="side" type="number" step="any" inputmode="decimal" autocomplete="off">
+                  </div>
+
+                  <div class="value-field">
+                    <label for="side-b">b</label>
+                    <input id="side-b" name="b" data-key="b" data-kind="side" type="number" step="any" inputmode="decimal" autocomplete="off">
+                  </div>
+
+                  <div class="value-field">
+                    <label for="side-c">c</label>
+                    <input id="side-c" name="c" data-key="c" data-kind="side" type="number" step="any" inputmode="decimal" autocomplete="off">
+                  </div>
+                </fieldset>
+
+                <fieldset class="value-group">
+                  <legend>ANGLES</legend>
+
+                  <div class="value-field">
+                    <label for="angle-a">A</label>
+                    <input id="angle-a" name="A" data-key="A" data-kind="angle" type="number" step="any" inputmode="decimal" autocomplete="off">
+                  </div>
+
+                  <div class="value-field">
+                    <label for="angle-b">B</label>
+                    <input id="angle-b" name="B" data-key="B" data-kind="angle" type="number" step="any" inputmode="decimal" autocomplete="off">
+                  </div>
+
+                  <div class="value-field">
+                    <label for="angle-c">C</label>
+                    <input id="angle-c" name="C" data-key="C" data-kind="angle" type="number" step="any" inputmode="decimal" autocomplete="off">
+                  </div>
+                </fieldset>
+              </div>
+
+              <div class="triangle-buttons">
+                <button class="primary-button" type="submit">SOLVE</button>
+                <button class="secondary-button" id="clear-button" type="button">CLEAR</button>
+              </div>
+
+              <p class="solver-message" id="solver-message" aria-live="polite">
+                ENTER 3 VALUES TO SOLVE.
+              </p>
+
+              <div class="solution-options" id="solution-options" hidden aria-live="polite"></div>
+
+              <p class="io-legend">
+                <span class="io-chip io-entered">ENTERED</span>
+                <span class="io-chip io-calculated">CALCULATED</span>
+              </p>
+            </form>
           </div>
 
-          <form class="triangle-controls" id="triangle-form" novalidate>
-            <div class="precision-row">
-              <label for="precision">DECIMAL PLACES</label>
-              <select id="precision" name="precision">
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4" selected>4</option>
-                <option value="5">5</option>
-                <option value="6">6</option>
-              </select>
-            </div>
+          <details class="work-panel" id="work-panel">
+            <summary>SHOW CALCULATIONS</summary>
+            <ol class="work-list" id="work-list">
+              <li>SOLVE A TRIANGLE TO SEE THE CALCULATION STEPS.</li>
+            </ol>
+          </details>
+        </section>
+      </main>
 
-            <div class="value-groups">
-              <fieldset class="value-group">
-                <legend>SIDES</legend>
-
-                <div class="value-field">
-                  <label for="side-a">a</label>
-                  <input id="side-a" name="a" data-key="a" data-kind="side" type="number" step="any" inputmode="decimal" autocomplete="off">
-                </div>
-
-                <div class="value-field">
-                  <label for="side-b">b</label>
-                  <input id="side-b" name="b" data-key="b" data-kind="side" type="number" step="any" inputmode="decimal" autocomplete="off">
-                </div>
-
-                <div class="value-field">
-                  <label for="side-c">c</label>
-                  <input id="side-c" name="c" data-key="c" data-kind="side" type="number" step="any" inputmode="decimal" autocomplete="off">
-                </div>
-              </fieldset>
-
-              <fieldset class="value-group">
-                <legend>ANGLES</legend>
-
-                <div class="value-field">
-                  <label for="angle-a">A</label>
-                  <input id="angle-a" name="A" data-key="A" data-kind="angle" type="number" step="any" inputmode="decimal" autocomplete="off">
-                </div>
-
-                <div class="value-field">
-                  <label for="angle-b">B</label>
-                  <input id="angle-b" name="B" data-key="B" data-kind="angle" type="number" step="any" inputmode="decimal" autocomplete="off">
-                </div>
-
-                <div class="value-field">
-                  <label for="angle-c">C</label>
-                  <input id="angle-c" name="C" data-key="C" data-kind="angle" type="number" step="any" inputmode="decimal" autocomplete="off">
-                </div>
-              </fieldset>
-            </div>
-
-            <div class="triangle-buttons">
-              <button class="primary-button" type="submit">SOLVE</button>
-              <button class="secondary-button" id="clear-button" type="button">CLEAR</button>
-            </div>
-
-            <p class="solver-message" id="solver-message" aria-live="polite">
-              ENTER 3 VALUES TO SOLVE.
-            </p>
-
-            <div class="solution-options" id="solution-options" hidden aria-live="polite"></div>
-          </form>
-        </div>
-
-        <details class="work-panel" id="work-panel">
-          <summary>SHOW CALCULATIONS</summary>
-          <ol class="work-list" id="work-list">
-            <li>SOLVE A TRIANGLE TO SEE THE CALCULATION STEPS.</li>
-          </ol>
-        </details>
-      </section>
-    </main>
-
-    <footer class="site-footer">
-      <a href="../about-terms.html">ABOUT &amp; TERMS</a>
-    </footer>
+      <footer class="term-status">
+        <span class="status-ready">READY<span class="cursor" aria-hidden="true"></span></span>
+        <nav class="status-links" aria-label="FOOTER">
+          <span class="status-note">INCH / METRIC AGNOSTIC &middot; NO TRACKING</span>
+          <a href="../about-terms.html">ABOUT &amp; TERMS</a>
+        </nav>
+      </footer>
+    </div>
 
     <script src="triangle.js"></script>
+    <script src="../assets/ui.js"></script>
   </body>
 </html>

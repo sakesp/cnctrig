@@ -4,41 +4,91 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="TRIG AND GEOMETRY CALCULATORS FOR MACHINISTS.">
+    <meta name="theme-color" content="#080a08">
     <title>CNC TRIG | MACHINIST CALCULATORS</title>
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
-    <main class="screen-shell">
-      <section class="screen-header" aria-labelledby="page-title">
-        <h1 id="page-title">CNCTRIG.COM</h1>
-      </section>
-
-      <section class="calculator-section" id="calculators" aria-labelledby="calculator-heading">
-        <h2 class="visually-hidden" id="calculator-heading">CALCULATORS</h2>
-        <div class="calculator-grid">
-          <a class="calculator-card card-triangle" href="calculators/triangle.html">
-            <span class="card-index">01</span>
-            <span class="card-title">TRIANGLE SOLVER</span>
-            <span class="card-copy">ENTER 3 VALUES, AT LEAST ONE SIDE, SOLVE FOR OTHERS</span>
-          </a>
-
-          <a class="calculator-card card-chamfer" href="calculators/lathe-chamfer.html">
-            <span class="card-index">02</span>
-            <span class="card-title">CHAMFER SOLVER</span>
-            <span class="card-copy">ENTER DIAMETER, CHAMFER SIZE AND ANGLE TO GET TURNING OR BORING CNC COORDINATES</span>
-          </a>
-
-          <a class="calculator-card card-axis" href="calculators/b-axis-rotation.html">
-            <span class="card-index">03</span>
-            <span class="card-title">B-AXIS ROTATION SOLVER</span>
-            <span class="card-copy">COMING SOON.</span>
-          </a>
+    <div class="crt">
+      <header class="term-bar">
+        <a class="brand" href="index.html" aria-label="CNC TRIG HOME">
+          <span class="brand-mark" aria-hidden="true"></span>CNCTRIG.COM
+        </a>
+        <div class="term-meta">
+          <span class="term-tag">MAIN MENU</span>
+          <span class="term-clock" data-clock>--:--:--</span>
         </div>
-      </section>
-    </main>
+      </header>
 
-    <footer class="site-footer">
-      <a href="about-terms.html">ABOUT &amp; TERMS</a>
-    </footer>
+      <main class="term-main">
+        <section class="menu-hero" aria-labelledby="page-title">
+          <h1 id="page-title">CNCTRIG.COM</h1>
+          <p class="menu-sub">TRIG &amp; GEOMETRY PROGRAMS FOR MACHINISTS</p>
+          <div class="ruler" aria-hidden="true"></div>
+        </section>
+
+        <section class="calculator-section" id="calculators" aria-labelledby="calculator-heading">
+          <h2 class="section-label" id="calculator-heading">SELECT PROGRAM</h2>
+          <div class="calculator-grid">
+            <a class="calculator-card" href="calculators/triangle.html" data-hotkey="1">
+              <span class="card-head">
+                <span class="card-index">1</span>
+                <span class="card-status"><span class="led" aria-hidden="true"></span>READY</span>
+              </span>
+              <span class="card-title">TRIANGLE SOLVER</span>
+              <span class="card-copy">ENTER 3 VALUES, AT LEAST ONE SIDE. SOLVES EVERY SIDE AND ANGLE AND SHOWS THE WORK.</span>
+              <svg class="card-icon" viewBox="0 0 96 68" aria-hidden="true">
+                <path d="M8 60 L88 60 L88 10 Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                <path d="M80 60 L80 52 L88 52" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                <path class="icon-accent" d="M26 60 A18 18 0 0 0 23.3 50.5" fill="none" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+              <span class="card-cta">PRESS 1 TO LOAD &#9656;</span>
+            </a>
+
+            <a class="calculator-card" href="calculators/lathe-chamfer.html" data-hotkey="2">
+              <span class="card-head">
+                <span class="card-index">2</span>
+                <span class="card-status"><span class="led" aria-hidden="true"></span>READY</span>
+              </span>
+              <span class="card-title">CHAMFER SOLVER</span>
+              <span class="card-copy">ENTER DIAMETER, CHAMFER SIZE AND ANGLE TO GET TURNING OR BORING CNC COORDINATES.</span>
+              <svg class="card-icon" viewBox="0 0 96 68" aria-hidden="true">
+                <path d="M8 18 L44 18 L60 34 L60 54" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                <path class="icon-accent" d="M44 18 L60 34" fill="none" stroke-width="3" stroke-linecap="round"/>
+                <path d="M4 62 H92" fill="none" stroke="currentColor" stroke-width="1.3" stroke-dasharray="10 4 2 4"/>
+              </svg>
+              <span class="card-cta">PRESS 2 TO LOAD &#9656;</span>
+            </a>
+
+            <a class="calculator-card" href="calculators/b-axis-rotation.html" data-hotkey="3">
+              <span class="card-head">
+                <span class="card-index">3</span>
+                <span class="card-status"><span class="led led-dev" aria-hidden="true"></span>IN DEV</span>
+              </span>
+              <span class="card-title">B-AXIS ROTATION SOLVER</span>
+              <span class="card-copy">COMING SOON.</span>
+              <svg class="card-icon" viewBox="0 0 96 68" aria-hidden="true">
+                <path d="M48 8 V60" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="8 4 2 4"/>
+                <path d="M16 34 H80" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="8 4 2 4"/>
+                <path class="icon-accent" d="M28 50 A26 26 0 1 1 68 50" fill="none" stroke-width="1.8" stroke-linecap="round"/>
+                <path class="icon-accent" d="M68 50 L63 42 M68 50 L74 45" fill="none" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+              <span class="card-cta">PRESS 3 TO LOAD &#9656;</span>
+            </a>
+          </div>
+        </section>
+      </main>
+
+      <footer class="term-status">
+        <span class="status-ready">READY<span class="cursor" aria-hidden="true"></span></span>
+        <nav class="status-links" aria-label="FOOTER">
+          <span class="status-note">INCH / METRIC AGNOSTIC &middot; NO TRACKING</span>
+          <a href="about-terms.html">ABOUT &amp; TERMS</a>
+        </nav>
+      </footer>
+    </div>
+
+    <script src="assets/ui.js"></script>
   </body>
 </html>
