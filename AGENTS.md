@@ -31,6 +31,7 @@ This is a static GitHub Pages site for machinist-focused trig and geometry calcu
 
 ## Rules for Codex
 
+- Before starting any work, check the remote repository for changes so the local checkout is not stale; this project is worked on from multiple workstations.
 - Make small, reviewable changes.
 - Explain what changed after each task.
 - Do not rewrite the whole project unless asked.
