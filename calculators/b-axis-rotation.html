@@ -3,8 +3,9 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Rotate an X-Z point around a horizontal machining center B-axis and calculate its new coordinates.">
     <meta name="theme-color" content="#080a08">
-    <title>B-AXIS ROTATION SOLVER | CNC TRIG</title>
+    <title>ROTARY COORDINATE CALCULATOR | CNC TRIG</title>
     <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
     <link rel="stylesheet" href="../styles.css">
   </head>
@@ -20,14 +21,154 @@
         </div>
       </header>
 
-      <main class="term-main placeholder-main">
-        <section class="placeholder-panel" aria-labelledby="page-title">
-          <p class="eyebrow">PRG 03 &middot; MILL</p>
-          <h1 id="page-title">B-AXIS ROTATION SOLVER</h1>
-          <p class="placeholder-copy"><span class="led led-dev" aria-hidden="true"></span>IN DEVELOPMENT &middot; COMING SOON</p>
-          <div>
+      <main class="term-main">
+        <section aria-labelledby="page-title">
+          <div class="calc-topbar">
+            <div>
+              <h1 id="page-title">ROTARY COORDINATE CALCULATOR</h1>
+              <p class="calc-guidance">
+                ENTER A POINT RELATIVE TO B-AXIS CENTER X0 Z0 AND THE B MOVE.
+                THE OUTPUT IS THAT SAME POINT AFTER THE TOMBSTONE ROTATES.
+              </p>
+            </div>
+
             <a class="back-link" href="../index.html">&#9664; MENU</a>
           </div>
+
+          <div class="triangle-workspace rotary-workspace">
+            <div class="triangle-diagram-wrap rotary-diagram-wrap" aria-label="B-AXIS ROTATION DIAGRAM">
+              <div class="diagram-caption" aria-hidden="true">
+                <span>TOP VIEW &middot; +Y SIDE</span>
+                <span>SCALE AUTO</span>
+              </div>
+
+              <svg class="triangle-svg rotary-svg" viewBox="0 0 640 430" role="img" aria-labelledby="rotary-svg-title rotary-svg-description">
+                <title id="rotary-svg-title">Top-view B-axis rotation diagram</title>
+                <desc id="rotary-svg-description">Enter original X and Z coordinates and a B rotation to plot the point.</desc>
+                <defs>
+                  <marker id="rotary-axis-arrow" markerWidth="8" markerHeight="8" refX="6.4" refY="4" orient="auto">
+                    <path d="M0,0 L8,4 L0,8 Z"></path>
+                  </marker>
+                  <marker id="rotary-angle-arrow" markerWidth="7" markerHeight="7" refX="5.8" refY="3.5" orient="auto">
+                    <path d="M0,0 L7,3.5 L0,7 Z"></path>
+                  </marker>
+                  <marker id="rotary-arc-arrow" markerWidth="8" markerHeight="7" refX="7" refY="3.5" orient="auto">
+                    <path d="M0,0 L7,3.5 L0,7 Z"></path>
+                  </marker>
+                </defs>
+
+                <g class="rotary-axes" aria-hidden="true">
+                  <line class="rotary-axis" x1="66" y1="226" x2="578" y2="226" marker-end="url(#rotary-axis-arrow)"></line>
+                  <line class="rotary-axis" x1="320" y1="54" x2="320" y2="402" marker-end="url(#rotary-axis-arrow)"></line>
+                  <text class="rotary-axis-label" x="584" y="220">X+</text>
+                  <text class="rotary-axis-label rotary-axis-label-negative" x="72" y="220">X-</text>
+                  <text class="rotary-axis-label" x="332" y="400">Z+</text>
+                  <text class="rotary-axis-label rotary-axis-label-negative" x="332" y="66">Z-</text>
+                </g>
+
+                <g class="rotary-direction-key" aria-hidden="true">
+                  <path class="rotary-direction-arrow rotary-direction-arrow-plus" d="M100 356 A28 28 0 0 1 72 328" marker-end="url(#rotary-angle-arrow)"></path>
+                  <text x="100" y="390">B+ CW</text>
+                  <path class="rotary-direction-arrow rotary-direction-arrow-minus" d="M540 356 A28 28 0 0 0 568 328" marker-end="url(#rotary-angle-arrow)"></path>
+                  <text x="540" y="390">B- CCW</text>
+                </g>
+
+                <circle id="rotary-orbit" class="rotary-orbit" cx="320" cy="226" r="0"></circle>
+                <line id="rotary-original-radius" class="rotary-radius rotary-original-radius" x1="320" y1="226" x2="320" y2="226"></line>
+                <line id="rotary-new-radius" class="rotary-radius rotary-new-radius" x1="320" y1="226" x2="320" y2="226"></line>
+                <path id="rotary-angle-arc" class="rotary-angle-arc" d="" marker-end="url(#rotary-arc-arrow)"></path>
+                <text id="rotary-angle-label" class="rotary-angle-label" x="320" y="226"></text>
+
+                <g class="rotary-center" aria-hidden="true">
+                  <path class="rotary-center-leader" d="M236 102 L270 102 L313 216"></path>
+                  <text x="92" y="98">B CENTER &middot; X0 Z0</text>
+                  <circle cx="320" cy="226" r="8"></circle>
+                  <line x1="306" y1="226" x2="334" y2="226"></line>
+                  <line x1="320" y1="212" x2="320" y2="240"></line>
+                </g>
+
+                <circle id="rotary-original-point" class="rotary-point rotary-original-point" cx="320" cy="226" r="0"></circle>
+                <circle id="rotary-new-point" class="rotary-point rotary-new-point" cx="320" cy="226" r="0"></circle>
+                <text id="rotary-original-label" class="rotary-point-label rotary-original-label" x="320" y="226"></text>
+                <text id="rotary-new-label" class="rotary-point-label rotary-new-label" x="320" y="226"></text>
+              </svg>
+
+              <div class="rotary-diagram-legend" aria-hidden="true">
+                <span><i class="rotary-legend-line rotary-legend-original"></i>ORIGINAL POINT</span>
+                <span><i class="rotary-legend-line rotary-legend-new"></i>ROTATED POINT</span>
+              </div>
+            </div>
+
+            <div class="triangle-controls rotary-controls" id="rotary-form">
+              <div class="precision-row">
+                <label for="precision">DECIMAL PLACES</label>
+                <select id="precision" name="precision">
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4" selected>4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                </select>
+              </div>
+
+              <fieldset class="value-group rotary-input-group">
+                <legend>ORIGINAL POINT + ROTATION</legend>
+
+                <div class="value-field">
+                  <label for="original-x">X</label>
+                  <input id="original-x" name="X" data-key="X" type="number" step="any" inputmode="text" autocomplete="off">
+                </div>
+
+                <div class="value-field">
+                  <label for="original-z">Z</label>
+                  <input id="original-z" name="Z" data-key="Z" type="number" step="any" inputmode="text" autocomplete="off">
+                </div>
+
+                <div class="value-field">
+                  <label for="rotation-b">B&deg;</label>
+                  <input id="rotation-b" name="B" data-key="B" type="number" step="any" inputmode="text" autocomplete="off">
+                </div>
+              </fieldset>
+
+              <p class="solver-message" id="solver-message" aria-live="polite">
+                ENTER ORIGINAL X, ORIGINAL Z, AND B ROTATION.
+              </p>
+
+              <section class="rotary-results" id="rotary-results" hidden aria-live="polite" aria-labelledby="rotary-results-heading">
+                <h2 id="rotary-results-heading">NEW COORDINATES</h2>
+                <div class="rotary-primary-results">
+                  <div class="rotary-output-card">
+                    <span>NEW X</span>
+                    <output id="new-x-output" aria-label="New X coordinate" tabindex="0"></output>
+                  </div>
+                  <div class="rotary-output-card">
+                    <span>NEW Z</span>
+                    <output id="new-z-output" aria-label="New Z coordinate" tabindex="0"></output>
+                  </div>
+                </div>
+                <div class="rotary-secondary-result">
+                  <span>RADIUS FROM B CENTER</span>
+                  <output id="radius-output" aria-label="Radius from B-axis center" tabindex="0"></output>
+                </div>
+              </section>
+
+              <div class="triangle-buttons rotary-buttons">
+                <button class="secondary-button" id="clear-button" type="button">CLEAR</button>
+              </div>
+
+              <p class="rotary-machine-note">
+                VERIFY B DIRECTION ON YOUR MACHINE BEFORE USING CALCULATED VALUES.
+              </p>
+            </div>
+          </div>
+
+          <details class="work-panel" id="work-panel">
+            <summary>SHOW CALCULATIONS</summary>
+            <ol class="work-list" id="work-list">
+              <li>ENTER ALL 3 VALUES TO SEE THE CALCULATION STEPS.</li>
+            </ol>
+          </details>
         </section>
       </main>
 
@@ -37,6 +178,7 @@
       </footer>
     </div>
 
+    <script src="b-axis-rotation.js"></script>
     <script src="../assets/ui.js"></script>
   </body>
 </html>
