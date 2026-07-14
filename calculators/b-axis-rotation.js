@@ -35,7 +35,6 @@
   }
 
   const inputKeys = ["X", "Z", "B"];
-  const form = document.querySelector("#rotary-form");
   const precisionSelect = document.querySelector("#precision");
   const clearButton = document.querySelector("#clear-button");
   const message = document.querySelector("#solver-message");
@@ -422,11 +421,6 @@
     text.setAttribute("x", x);
     text.setAttribute("y", y);
   }
-
-  form.addEventListener("submit", (event) => {
-    event.preventDefault();
-    updateCalculator();
-  });
 
   inputKeys.forEach((key) => {
     fields[key].addEventListener("input", updateCalculator);

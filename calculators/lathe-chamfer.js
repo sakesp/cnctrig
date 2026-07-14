@@ -3,8 +3,9 @@
   const tolerance = 1e-10;
   const defaultValues = { D: 1, A: 45, C: 0.05, Z: 0 };
 
-  const form = document.querySelector("#chamfer-form");
+  const controls = document.querySelector("#chamfer-form");
   const precisionSelect = document.querySelector("#precision");
+  const solveButton = document.querySelector("#solve-button");
   const clearButton = document.querySelector("#clear-button");
   const message = document.querySelector("#solver-message");
   const resultPanel = document.querySelector("#chamfer-results");
@@ -66,7 +67,7 @@
   let lastSolution = null;
 
   function getMode() {
-    return form.elements.mode.value;
+    return controls.querySelector('input[name="mode"]:checked').value;
   }
 
   function getPrecision() {
@@ -1037,9 +1038,7 @@
     text.setAttribute("y", y);
   }
 
-  form.addEventListener("submit", (event) => {
-    event.preventDefault();
-
+  function solveFromInputs() {
     const mode = getMode();
     const parsed = parseInputs(mode);
     const errors = validateInputs(parsed, mode);
@@ -1051,15 +1050,17 @@
 
     lastSolution = solveChamfer(parsed.values, mode, parsed.extensions);
     renderSolution(lastSolution);
-  });
+  }
 
-  form.addEventListener("keydown", (event) => {
+  solveButton.addEventListener("click", solveFromInputs);
+
+  controls.addEventListener("keydown", (event) => {
     if (event.key !== "Enter" || !event.target.matches("input")) {
       return;
     }
 
     event.preventDefault();
-    form.requestSubmit();
+    solveFromInputs();
   });
 
   clearButton.addEventListener("click", clearAll);
@@ -1085,7 +1086,7 @@
     });
   });
 
-  form.addEventListener("change", (event) => {
+  controls.addEventListener("change", (event) => {
     if (event.target.name !== "mode") {
       return;
     }

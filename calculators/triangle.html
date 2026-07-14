@@ -55,7 +55,7 @@
               </svg>
             </div>
 
-            <form class="triangle-controls" id="triangle-form" novalidate>
+            <div class="triangle-controls" id="triangle-form">
               <div class="precision-row">
                 <label for="precision">DECIMAL PLACES</label>
                 <select id="precision" name="precision">
@@ -109,7 +109,7 @@
               </div>
 
               <div class="triangle-buttons">
-                <button class="primary-button" type="submit">SOLVE</button>
+                <button class="primary-button" id="solve-button" type="button">SOLVE</button>
                 <button class="secondary-button" id="clear-button" type="button">CLEAR</button>
               </div>
 
@@ -123,7 +123,7 @@
                 COLOR KEY: ENTERED VALUES SHOW <span class="io-cyan">CYAN</span> &middot;
                 CALCULATED VALUES SHOW <span class="io-amber">AMBER</span>.
               </p>
-            </form>
+            </div>
           </div>
 
           <details class="work-panel" id="work-panel">

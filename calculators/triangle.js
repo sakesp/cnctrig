@@ -30,8 +30,9 @@
   const sideTolerance = 1e-10;
   const defaultSides = { a: 3, b: 5, c: 4 };
 
-  const form = document.querySelector("#triangle-form");
+  const controls = document.querySelector("#triangle-form");
   const precisionSelect = document.querySelector("#precision");
+  const solveButton = document.querySelector("#solve-button");
   const clearButton = document.querySelector("#clear-button");
   const message = document.querySelector("#solver-message");
   const solutionOptions = document.querySelector("#solution-options");
@@ -766,9 +767,7 @@
     element.setAttribute("y", point.y);
   }
 
-  form.addEventListener("submit", (event) => {
-    event.preventDefault();
-
+  function solveFromInputs() {
     const parsed = parseInputs();
     const solution = solveTriangle(parsed);
 
@@ -782,6 +781,17 @@
     renderResults(solution);
     renderWork(solution);
     drawTriangleSvg(solution);
+  }
+
+  solveButton.addEventListener("click", solveFromInputs);
+
+  controls.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter" || !event.target.matches("input")) {
+      return;
+    }
+
+    event.preventDefault();
+    solveFromInputs();
   });
 
   clearButton.addEventListener("click", clearAll);
