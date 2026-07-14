@@ -1,11 +1,21 @@
 # STYLE-NOTES.md
 
 Design + structure conventions for cnctrig.com. Follow these when adding a new
-calculator so it matches the existing pages. The fastest path: **copy
-`calculators/triangle.html` as a starting template** and adapt the body — the
-CSS in `styles.css` already covers every class below.
+calculator so it matches the existing pages. Start from the calculator whose
+interaction is closest to the new tool:
 
-## Page skeleton (every page)
+- `calculators/triangle.html` for a solver that writes calculated values back
+  into shared input/output fields.
+- `calculators/lathe-chamfer.html` for an explicit SOLVE action with separate
+  result cards.
+- `calculators/b-axis-rotation.html` for live calculation with separate result
+  cards.
+
+The existing calculators are the source of truth. Reuse the shared classes in
+`styles.css`, then add narrowly scoped calculator-specific classes when the new
+tool needs a different layout or interaction.
+
+## Page skeleton (every calculator page)
 
 Wrap the whole page in the shared CRT shell:
 
@@ -63,7 +73,7 @@ Wrap the whole page in the shared CRT shell:
       </svg>
     </div>
 
-    <form class="triangle-controls" id="..." novalidate>
+    <div class="triangle-controls" id="...">
       <div class="precision-row">
         <label for="precision">DECIMAL PLACES</label>
         <select id="precision" name="precision"><!-- options 1–6, 4 selected --></select>
@@ -81,12 +91,13 @@ Wrap the whole page in the shared CRT shell:
       </div>
 
       <div class="triangle-buttons">
-        <button class="primary-button" type="submit">SOLVE</button>
+        <!-- Include SOLVE for explicit-action calculators; omit it for live calculators. -->
+        <button class="primary-button" type="button">SOLVE</button>
         <button class="secondary-button" id="clear-button" type="button">CLEAR</button>
       </div>
 
       <p class="solver-message" id="solver-message" aria-live="polite">ENTER VALUES TO SOLVE.</p>
-    </form>
+    </div>
   </div>
 
   <details class="work-panel" id="work-panel">
@@ -101,18 +112,26 @@ Wrap the whole page in the shared CRT shell:
 ## Conventions the CSS won't tell you
 
 - **Inputs are DRO-style** (right-aligned bright digits) — that's automatic from
-  `.value-field input`. Just use `type="number" step="any" inputmode="decimal"
-  autocomplete="off"` and a `data-key`.
-- **Entered vs. calculated coloring:** the JS must toggle `is-entered` (cyan) on
-  fields the user typed and `is-calculated` (amber) on fields you solved for.
-  Mirror how `calculators/triangle.js` applies these.
+  `.value-field input`. Use `type="number" step="any" autocomplete="off"` and a
+  `data-key`. Use `inputmode="decimal"` by default; `inputmode="text"` is
+  acceptable when signed coordinate entry needs a full keyboard.
+- **Entered vs. calculated coloring:** when entered and calculated values share
+  the same fields, toggle `is-entered` (cyan) and `is-calculated` (amber) as
+  `calculators/triangle.js` does. Calculators with separate output cards only
+  need `is-entered` on their input fields.
+- **Field grouping:** use `.value-groups` when multiple fieldsets need a shared
+  grid. A calculator with one fieldset may place `.value-group` directly in the
+  controls, as the B-axis calculator does.
 - **Calculation steps auto-number like G-code** (N10, N20, …) via a CSS counter
   on `.work-list li`. Just append plain `<li>` items in JS — don't add the
   numbers yourself.
-- **Units are unlabeled** (inch/metric agnostic) and **every calculator has a
-  decimal-places selector** — see `AGENTS.md`.
-- **SOLVE is green (cycle-start), CLEAR is amber** — already handled by
-  `.primary-button` / `.secondary-button`.
+- **Linear units are unlabeled** (inch/metric agnostic); angular values may use
+  degree labels. **Every calculator has a decimal-places selector** — see
+  `AGENTS.md`.
+- **Interaction may be explicit or live:** explicit-action calculators use a
+  green SOLVE button and amber CLEAR button. Live calculators update from input
+  events and may omit SOLVE. Use `.primary-button` / `.secondary-button` for the
+  buttons that are present.
 - **Color key note:** include the plain-text `io-legend` line (as on the triangle
   page) only if inputs and outputs share one section. If you split INPUTS and
   OUTPUT into separate labeled sections (as the chamfer page does), omit it.
@@ -121,10 +140,12 @@ Wrap the whole page in the shared CRT shell:
 
 - Use `viewBox="0 0 640 430"` and drive it from JS by setting SVG attributes, the
   same approach as `triangle.js` / `lathe-chamfer.js`.
-- Reuse the established stroke classes/colors: profile/geometry lines in bright
-  phosphor, dimension leaders/labels in amber, points/vertices in cyan. Pull
-  colors from the CSS custom properties in `:root` (`--ph-bright`, `--amber`,
-  `--cyan`, …) rather than hard-coding hex values.
+- Reuse the established color semantics: base geometry and axes in phosphor,
+  entered/original geometry in cyan, and calculated/result geometry plus
+  dimension leaders and labels in amber.
+- Prefer the CSS custom properties in `:root` (`--ph-bright`, `--amber`,
+  `--cyan`, …) when an exact token exists. Add a token for a recurring new
+  palette color; calculator-specific translucent effects may use `rgba()`.
 
 ## When the calculator goes live
 
@@ -138,4 +159,4 @@ and replace the "COMING SOON." copy with a real one-line description. The
   (fake READY lights, button-styled labels). Indicators must reflect something
   real — the menu LEDs (READY vs. IN DEV) are fine because they're truthful.
 - Don't pull in frameworks or external dependencies (see `AGENTS.md`).
-- Don't hard-code colors when a CSS variable exists.
+- Don't hard-code a named palette color when a CSS variable exists.
