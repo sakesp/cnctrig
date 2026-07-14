@@ -415,18 +415,6 @@ p {
   box-shadow: 0 0 9px rgba(85, 232, 143, 0.85);
 }
 
-.led-dev {
-  background: var(--amber);
-  box-shadow: 0 0 9px rgba(255, 190, 92, 0.8);
-  animation: led-pulse 2.4s ease-in-out infinite;
-}
-
-@keyframes led-pulse {
-  50% {
-    opacity: 0.35;
-  }
-}
-
 .card-title {
   color: var(--ph-bright);
   font-size: 1.28rem;
@@ -1283,51 +1271,302 @@ p {
 }
 
 /* ==========================================================================
-   placeholder page (b-axis)
+   rotary coordinate calculator
    ========================================================================== */
 
-.placeholder-main {
-  display: grid;
-  place-items: center;
+.rotary-workspace {
+  grid-template-columns: minmax(360px, 1.08fr) minmax(330px, 0.92fr);
 }
 
-.placeholder-panel {
-  position: relative;
-  width: min(640px, 100%);
-  padding: 30px 30px 26px;
-  text-align: center;
-  background:
-    linear-gradient(180deg, rgba(85, 232, 143, 0.05), rgba(85, 232, 143, 0.008) 52%),
-    rgba(3, 8, 5, 0.55);
+.rotary-svg {
+  min-height: 330px;
+}
+
+#rotary-axis-arrow path {
+  fill: var(--ph);
+}
+
+#rotary-angle-arrow path,
+#rotary-arc-arrow path {
+  fill: var(--amber);
+}
+
+.rotary-axis {
+  stroke: rgba(85, 232, 143, 0.48);
+  stroke-width: 1.7;
+  stroke-dasharray: 12 5 3 5;
+}
+
+.rotary-axis-label,
+.rotary-direction-key text,
+.rotary-center text,
+.rotary-point-label,
+.rotary-angle-label {
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
+  paint-order: stroke;
+  stroke: rgba(3, 8, 5, 0.92);
+  text-transform: uppercase;
+}
+
+.rotary-axis-label {
+  fill: var(--ph);
+  font-size: 18px;
+  stroke-width: 4px;
+}
+
+.rotary-axis-label-negative {
+  fill: var(--dim);
+  text-anchor: end;
+}
+
+.rotary-direction-key text {
+  fill: var(--dim);
+  font-size: 15px;
+  text-anchor: middle;
+  stroke-width: 4px;
+}
+
+.rotary-direction-arrow {
+  fill: none;
+  stroke: var(--amber);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.rotary-orbit {
+  fill: none;
+  stroke: rgba(85, 232, 143, 0.2);
+  stroke-width: 1.5;
+  stroke-dasharray: 7 8;
+}
+
+.rotary-radius {
+  stroke-width: 2.3;
+  stroke-linecap: round;
+}
+
+.rotary-original-radius {
+  stroke: var(--cyan);
+  stroke-dasharray: 8 6;
+}
+
+.rotary-new-radius {
+  stroke: var(--amber);
+  filter: drop-shadow(0 0 5px rgba(255, 190, 92, 0.25));
+}
+
+.rotary-angle-arc {
+  fill: none;
+  stroke: var(--amber);
+  stroke-width: 3;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 5px rgba(255, 190, 92, 0.25));
+}
+
+.rotary-angle-label {
+  fill: var(--amber-bright);
+  font-size: 17px;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  stroke-width: 5px;
+}
+
+.rotary-center circle {
+  fill: #03100a;
+  stroke: var(--ph-bright);
+  stroke-width: 2;
+  filter: drop-shadow(0 0 5px rgba(85, 232, 143, 0.4));
+}
+
+.rotary-center line {
+  stroke: var(--ph-bright);
+  stroke-width: 1.5;
+}
+
+.rotary-center-leader {
+  fill: none;
+  stroke: var(--dim);
+  stroke-width: 1.4;
+  stroke-dasharray: 5 5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.rotary-center text {
+  fill: var(--dim);
+  font-size: 14px;
+  stroke-width: 4px;
+}
+
+.rotary-point {
+  stroke-width: 3;
+}
+
+.rotary-original-point {
+  fill: #03100a;
+  stroke: var(--cyan-bright);
+  filter: drop-shadow(0 0 6px rgba(111, 219, 235, 0.5));
+}
+
+.rotary-new-point {
+  fill: var(--amber-bright);
+  stroke: rgba(3, 8, 5, 0.92);
+  filter: drop-shadow(0 0 7px rgba(255, 190, 92, 0.55));
+}
+
+.rotary-point-label {
+  font-size: 16px;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  stroke-width: 5px;
+}
+
+.rotary-original-label {
+  fill: var(--cyan-bright);
+}
+
+.rotary-new-label {
+  fill: var(--amber-bright);
+}
+
+.rotary-diagram-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px 24px;
+  align-items: center;
+  padding: 9px 13px 10px;
+  color: var(--dim);
+  font-size: 0.72rem;
+  letter-spacing: 0.13em;
+  border-top: 1px solid var(--faint);
+}
+
+.rotary-diagram-legend span {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.rotary-legend-line {
+  display: inline-block;
+  width: 28px;
+  height: 0;
+  border-top: 2px solid;
+}
+
+.rotary-legend-original {
+  border-color: var(--cyan);
+  border-top-style: dashed;
+}
+
+.rotary-legend-new {
+  border-color: var(--amber);
+}
+
+.rotary-controls .value-field {
+  grid-template-columns: 52px minmax(0, 1fr);
+}
+
+.rotary-controls .value-field label {
+  font-size: 1rem;
+}
+
+.rotary-input-group {
+  padding-bottom: 8px;
+}
+
+.rotary-controls input[aria-invalid="true"] {
+  border-color: var(--alarm);
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.55), 0 0 10px rgba(255, 133, 112, 0.16);
+}
+
+.rotary-results {
+  padding: 13px 14px 12px;
+  margin-top: 14px;
+  background: rgba(0, 0, 0, 0.3);
   border: 1px solid var(--line);
-  border-radius: 6px;
-  box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.45);
+  border-radius: var(--radius);
 }
 
-.placeholder-panel::before,
-.placeholder-panel::after {
-  position: absolute;
-  width: 15px;
-  height: 15px;
-  content: "";
-  border: 1px solid var(--line-strong);
-  pointer-events: none;
+.rotary-results h2 {
+  margin-bottom: 10px;
+  color: var(--dim);
+  font-size: 0.78rem;
+  font-weight: 400;
+  letter-spacing: 0.22em;
 }
 
-.placeholder-panel::before {
-  top: -1px;
-  left: -1px;
-  border-right: none;
-  border-bottom: none;
-  border-top-left-radius: 6px;
+.rotary-primary-results {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
 }
 
-.placeholder-panel::after {
-  right: -1px;
-  bottom: -1px;
-  border-top: none;
-  border-left: none;
-  border-bottom-right-radius: 6px;
+.rotary-output-card {
+  min-width: 0;
+  padding: 11px 13px 12px;
+  background: rgba(0, 0, 0, 0.43);
+  border: 1px solid rgba(255, 190, 92, 0.4);
+  border-radius: 3px;
+}
+
+.rotary-output-card span,
+.rotary-secondary-result span {
+  display: block;
+  color: var(--dim);
+  font-size: 0.74rem;
+  letter-spacing: 0.16em;
+}
+
+.rotary-output-card output,
+.rotary-secondary-result output {
+  display: block;
+  overflow-wrap: anywhere;
+  color: var(--amber-bright);
+  font-size: 1.45rem;
+  line-height: 1.35;
+  text-transform: none;
+  text-shadow: var(--glow-amber);
+  cursor: text;
+  user-select: all;
+}
+
+.rotary-output-card output:focus-visible,
+.rotary-secondary-result output:focus-visible {
+  outline: 2px solid rgba(255, 216, 143, 0.55);
+  outline-offset: 3px;
+}
+
+.rotary-secondary-result {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 9px 13px;
+  margin-top: 8px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--faint);
+  border-radius: 3px;
+}
+
+.rotary-secondary-result output {
+  color: var(--text);
+  font-size: 1.05rem;
+  text-shadow: none;
+}
+
+.rotary-buttons {
+  margin-top: 15px;
+}
+
+.rotary-machine-note {
+  margin: 13px 0 0;
+  color: #45705a;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  line-height: 1.5;
 }
 
 .eyebrow {
@@ -1337,25 +1576,6 @@ p {
   font-weight: 400;
   letter-spacing: 0.24em;
   text-transform: uppercase;
-}
-
-.placeholder-panel h1 {
-  margin-bottom: 14px;
-  color: var(--ph-bright);
-  font-size: 1.5rem;
-  font-weight: 400;
-  letter-spacing: 0.12em;
-  text-shadow: var(--glow-text);
-}
-
-.placeholder-copy {
-  display: inline-flex;
-  gap: 10px;
-  align-items: center;
-  margin-bottom: 22px;
-  color: var(--dim);
-  font-size: 0.9rem;
-  letter-spacing: 0.14em;
 }
 
 /* ==========================================================================
@@ -1504,6 +1724,14 @@ p {
 
   .chamfer-svg {
     min-height: 280px;
+  }
+
+  .rotary-svg {
+    min-height: 280px;
+  }
+
+  .rotary-primary-results {
+    grid-template-columns: 1fr;
   }
 
   .triangle-side-label,
